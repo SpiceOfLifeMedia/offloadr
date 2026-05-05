@@ -3,20 +3,36 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Offloadr API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: projects
+    description: Project operations
+  - name: participants
+    description: Participant operations
+  - name: files
+    description: File operations
+  - name: shares
+    description: Editor share operations
+  - name: activity
+    description: Activity log operations
+  - name: dashboard
+    description: Dashboard summary operations
+  - name: storage
+    description: Storage status operations
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +40,579 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/register:
+    post:
+      operationId: registerUser
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterUserBody"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Email already in use
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: loginUser
+      tags: [auth]
+      summary: Log in
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginUserBody"
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logoutUser
+      tags: [auth]
+      summary: Log out
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /projects:
+    get:
+      operationId: listProjects
+      tags: [projects]
+      summary: List all projects for current user
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Projects list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+    post:
+      operationId: createProject
+      tags: [projects]
+      summary: Create a new project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProjectBody"
+      responses:
+        "201":
+          description: Project created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+
+  /projects/{id}:
+    get:
+      operationId: getProject
+      tags: [projects]
+      summary: Get a project by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Project detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    patch:
+      operationId: updateProject
+      tags: [projects]
+      summary: Update a project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProjectBody"
+      responses:
+        "200":
+          description: Updated project
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+    delete:
+      operationId: deleteProject
+      tags: [projects]
+      summary: Delete a project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /projects/{id}/mark-ready:
+    post:
+      operationId: markProjectReady
+      tags: [projects]
+      summary: Mark project as ready for editor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Project marked ready
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+
+  /projects/{id}/mark-review:
+    post:
+      operationId: markProjectReview
+      tags: [projects]
+      summary: Mark project as needing review
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Project marked for review
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+
+  /projects/{id}/archive:
+    post:
+      operationId: archiveProject
+      tags: [projects]
+      summary: Archive a project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Project archived
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+
+  /projects/{id}/missing-files:
+    get:
+      operationId: getMissingFiles
+      tags: [projects]
+      summary: Get missing file checklist for a project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Missing files checklist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MissingFilesResponse"
+
+  /projects/{id}/participants:
+    get:
+      operationId: listParticipants
+      tags: [participants]
+      summary: List participants for a project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Participants list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Participant"
+    post:
+      operationId: createParticipant
+      tags: [participants]
+      summary: Add a participant to a project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateParticipantBody"
+      responses:
+        "201":
+          description: Participant created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Participant"
+
+  /participants/{id}:
+    patch:
+      operationId: updateParticipant
+      tags: [participants]
+      summary: Update a participant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateParticipantBody"
+      responses:
+        "200":
+          description: Updated participant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Participant"
+    delete:
+      operationId: deleteParticipant
+      tags: [participants]
+      summary: Delete a participant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /projects/{id}/files:
+    get:
+      operationId: listProjectFiles
+      tags: [files]
+      summary: List files for a project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Files list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MediaFile"
+
+  /projects/{id}/files/upload:
+    post:
+      operationId: uploadFile
+      tags: [files]
+      summary: Upload a file to a project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "201":
+          description: File uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MediaFile"
+
+  /files/{id}:
+    patch:
+      operationId: updateFile
+      tags: [files]
+      summary: Update file metadata
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateFileBody"
+      responses:
+        "200":
+          description: Updated file
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MediaFile"
+    delete:
+      operationId: deleteFile
+      tags: [files]
+      summary: Delete a file
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /files/{id}/retry:
+    post:
+      operationId: retryFileUpload
+      tags: [files]
+      summary: Retry a failed file upload
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Retry queued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MediaFile"
+
+  /projects/{id}/share:
+    post:
+      operationId: createEditorShare
+      tags: [shares]
+      summary: Create an editor share link for a project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateShareBody"
+      responses:
+        "201":
+          description: Share created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EditorShare"
+
+  /share/{token}:
+    get:
+      operationId: getEditorShare
+      tags: [shares]
+      summary: Get public editor handoff page by share token
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Editor handoff data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EditorHandoff"
+        "404":
+          description: Share not found or expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /share/{token}/disable:
+    patch:
+      operationId: disableEditorShare
+      tags: [shares]
+      summary: Disable an editor share link
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Share disabled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /projects/{id}/activity:
+    get:
+      operationId: listActivity
+      tags: [activity]
+      summary: Get activity log for a project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Activity log
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityLog"
+
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [dashboard]
+      summary: Get dashboard summary statistics
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /storage/status:
+    get:
+      operationId: getStorageStatus
+      tags: [storage]
+      summary: Get storage provider status and usage
+      responses:
+        "200":
+          description: Storage status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StorageStatus"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +623,484 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required:
+        - error
+        - message
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+
+    RegisterUserBody:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+        studioName:
+          type: string
+          nullable: true
+      required:
+        - name
+        - email
+        - password
+
+    LoginUserBody:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        studioName:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - email
+        - role
+        - createdAt
+
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        message:
+          type: string
+      required:
+        - user
+        - message
+
+    Project:
+      type: object
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        projectName:
+          type: string
+        episodeTitle:
+          type: string
+          nullable: true
+        clientName:
+          type: string
+          nullable: true
+        recordingDate:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [draft, uploading, review_needed, ready_for_editor, delivered, archived]
+        description:
+          type: string
+          nullable: true
+        editorNotes:
+          type: string
+          nullable: true
+        expectedCameraCount:
+          type: integer
+          nullable: true
+        expectedAudioSetup:
+          type: string
+          nullable: true
+        fileCount:
+          type: integer
+        totalSize:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - userId
+        - projectName
+        - status
+        - fileCount
+        - totalSize
+        - createdAt
+        - updatedAt
+
+    CreateProjectBody:
+      type: object
+      properties:
+        projectName:
+          type: string
+        episodeTitle:
+          type: string
+          nullable: true
+        clientName:
+          type: string
+          nullable: true
+        recordingDate:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        editorNotes:
+          type: string
+          nullable: true
+        expectedCameraCount:
+          type: integer
+          nullable: true
+        expectedAudioSetup:
+          type: string
+          nullable: true
+      required:
+        - projectName
+
+    UpdateProjectBody:
+      type: object
+      properties:
+        projectName:
+          type: string
+        episodeTitle:
+          type: string
+          nullable: true
+        clientName:
+          type: string
+          nullable: true
+        recordingDate:
+          type: string
+          nullable: true
+        status:
+          type: string
+        description:
+          type: string
+          nullable: true
+        editorNotes:
+          type: string
+          nullable: true
+        expectedCameraCount:
+          type: integer
+          nullable: true
+        expectedAudioSetup:
+          type: string
+          nullable: true
+
+    MissingFilesResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              present:
+                type: boolean
+              required:
+                type: boolean
+            required:
+              - label
+              - present
+              - required
+        allPresent:
+          type: boolean
+      required:
+        - items
+        - allPresent
+
+    Participant:
+      type: object
+      properties:
+        id:
+          type: integer
+        projectId:
+          type: integer
+        name:
+          type: string
+        role:
+          type: string
+          nullable: true
+        micLabel:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - projectId
+        - name
+        - createdAt
+
+    CreateParticipantBody:
+      type: object
+      properties:
+        name:
+          type: string
+        role:
+          type: string
+          nullable: true
+        micLabel:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+      required:
+        - name
+
+    UpdateParticipantBody:
+      type: object
+      properties:
+        name:
+          type: string
+        role:
+          type: string
+          nullable: true
+        micLabel:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+
+    MediaFile:
+      type: object
+      properties:
+        id:
+          type: integer
+        projectId:
+          type: integer
+        originalFileName:
+          type: string
+        cleanFileName:
+          type: string
+          nullable: true
+        fileType:
+          type: string
+        mediaRole:
+          type: string
+          nullable: true
+        fileSize:
+          type: number
+        duration:
+          type: integer
+          nullable: true
+        uploadStatus:
+          type: string
+        storagePath:
+          type: string
+          nullable: true
+        publicUrl:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        checksum:
+          type: string
+          nullable: true
+        uploadedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - projectId
+        - originalFileName
+        - fileType
+        - fileSize
+        - uploadStatus
+        - createdAt
+        - updatedAt
+
+    UpdateFileBody:
+      type: object
+      properties:
+        mediaRole:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        cleanFileName:
+          type: string
+          nullable: true
+
+    EditorShare:
+      type: object
+      properties:
+        id:
+          type: integer
+        projectId:
+          type: integer
+        shareToken:
+          type: string
+        isActive:
+          type: boolean
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - projectId
+        - shareToken
+        - isActive
+        - createdAt
+
+    CreateShareBody:
+      type: object
+      properties:
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+        password:
+          type: string
+          nullable: true
+
+    EditorHandoff:
+      type: object
+      properties:
+        project:
+          $ref: "#/components/schemas/Project"
+        files:
+          type: array
+          items:
+            $ref: "#/components/schemas/MediaFile"
+        participants:
+          type: array
+          items:
+            $ref: "#/components/schemas/Participant"
+        share:
+          $ref: "#/components/schemas/EditorShare"
+      required:
+        - project
+        - files
+        - participants
+        - share
+
+    ActivityLog:
+      type: object
+      properties:
+        id:
+          type: integer
+        projectId:
+          type: integer
+        userId:
+          type: integer
+          nullable: true
+        action:
+          type: string
+        message:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - projectId
+        - action
+        - message
+        - createdAt
+
+    DashboardStats:
+      type: object
+      properties:
+        totalProjects:
+          type: integer
+        totalFiles:
+          type: integer
+        totalStorageBytes:
+          type: number
+        projectsByStatus:
+          type: object
+          additionalProperties:
+            type: integer
+        recentProjects:
+          type: array
+          items:
+            $ref: "#/components/schemas/Project"
+        activeUploads:
+          type: integer
+        readyForEditor:
+          type: integer
+        reviewNeeded:
+          type: integer
+      required:
+        - totalProjects
+        - totalFiles
+        - totalStorageBytes
+        - projectsByStatus
+        - recentProjects
+        - activeUploads
+        - readyForEditor
+        - reviewNeeded
+
+    StorageStatus:
+      type: object
+      properties:
+        provider:
+          type: string
+        status:
+          type: string
+        totalBytes:
+          type: number
+        totalFiles:
+          type: integer
+        maxBytes:
+          type: number
+          nullable: true
+      required:
+        - provider
+        - status
+        - totalBytes
+        - totalFiles

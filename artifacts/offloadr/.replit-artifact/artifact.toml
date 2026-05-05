@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Offloadr"
+version = "1.0.0"
+id = "artifacts/offloadr"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25989
+
+[services.development]
+run = "pnpm --filter @workspace/offloadr run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/offloadr", "run", "build" ]
+publicDir = "artifacts/offloadr/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25989"
+BASE_PATH = "/"
