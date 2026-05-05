@@ -217,50 +217,39 @@ router.get("/projects/:id/missing-files", requireAuth, async (req, res): Promise
 router.get("/dashboard/stats", requireAuth, async (req, res): Promise<void> => {
   const userId = getUserId(req)!;
   const projects = await db.select().from(projectsTable).where(eq(projectsTable.userId, userId));
-  const allFiles = await db
-    .select()
-    .from(mediaFilesTable)
-    .where(
-      eq(
-        mediaFilesTable.projectId,
-        db
-          .select({ id: projectsTable.id })
-          .from(projectsTable)
-          .where(eq(projectsTable.userId, userId))
-          .limit(1)
-          .$dynamic(),
-      ),
-    );
 
   const projectIds = projects.map((p) => p.id);
-
-  let totalFiles = 0;
-  let totalStorageBytes = 0;
   const projectsByStatus: Record<string, number> = {};
-  let activeUploads = 0;
 
   for (const p of projects) {
     projectsByStatus[p.status] = (projectsByStatus[p.status] ?? 0) + 1;
   }
 
+  let totalFiles = 0;
+  let totalStorageBytes = 0;
+  let activeUploads = 0;
+  const filesByProject: Record<number, typeof mediaFilesTable.$inferSelect[]> = {};
+
   if (projectIds.length > 0) {
-    const files = await db.select().from(mediaFilesTable);
-    const myFiles = files.filter((f) => projectIds.includes(f.projectId));
+    const allFiles = await db.select().from(mediaFilesTable);
+    const myFiles = allFiles.filter((f) => projectIds.includes(f.projectId));
     totalFiles = myFiles.length;
     totalStorageBytes = myFiles.reduce((acc, f) => acc + Number(f.fileSize), 0);
     activeUploads = myFiles.filter((f) => f.uploadStatus === "uploading").length;
+    for (const f of myFiles) {
+      if (!filesByProject[f.projectId]) filesByProject[f.projectId] = [];
+      filesByProject[f.projectId]!.push(f);
+    }
   }
 
-  const recentProjects = await Promise.all(
-    projects
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 5)
-      .map(async (p) => {
-        const files = await db.select().from(mediaFilesTable).where(eq(mediaFilesTable.projectId, p.id));
-        const totalSize = files.reduce((acc, f) => acc + Number(f.fileSize), 0);
-        return { ...p, fileCount: files.length, totalSize };
-      }),
+  const sortedProjects = [...projects].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
+  const recentProjects = sortedProjects.slice(0, 5).map((p) => {
+    const files = filesByProject[p.id] ?? [];
+    const totalSize = files.reduce((acc, f) => acc + Number(f.fileSize), 0);
+    return { ...p, fileCount: files.length, totalSize };
+  });
 
   res.json({
     totalProjects: projects.length,
