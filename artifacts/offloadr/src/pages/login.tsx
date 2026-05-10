@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useLoginUser } from "@workspace/api-client-react";
+import { PublicLayout } from "@/components/layout/public-layout";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -53,7 +54,8 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
+    <PublicLayout>
+      <div className="flex-1 flex items-center justify-center bg-muted/30 p-4 py-16">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold tracking-tight">Log in to Offloadr</CardTitle>
@@ -109,6 +111,7 @@ export default function Login() {
           </div>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </PublicLayout>
   );
 }
