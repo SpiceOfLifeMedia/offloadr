@@ -46,6 +46,7 @@ app.use(session({
   },
 }));
 
-app.use("/api", router);
+const apiMountPath = process.env.API_MOUNT_PATH ?? "/api";
+app.use(apiMountPath, router);
 
 export default app;
