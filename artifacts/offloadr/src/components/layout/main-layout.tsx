@@ -46,7 +46,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
       <div className="flex min-h-screen w-full bg-background">
         <Sidebar>
           <SidebarHeader className="flex items-center px-4 py-6 border-b">
-            <img src="/logo.png" alt="Offloadr" className="h-7 w-auto dark:invert" />
+            <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Offloadr" className="h-7 w-auto dark:invert" />
           </SidebarHeader>
           <SidebarContent>
             <SidebarGroup>

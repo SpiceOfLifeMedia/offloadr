@@ -8,7 +8,7 @@ import { Link } from "wouter";
           <div className="container flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center" aria-label="Offloadr">
               <img
-                src="/logo.png"
+                src={`${import.meta.env.BASE_URL}logo.png`}
                 alt="Offloadr"
                 className="h-8 w-auto dark:invert"
               />
