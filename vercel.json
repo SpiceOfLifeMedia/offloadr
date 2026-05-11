@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "installCommand": "pnpm install --no-frozen-lockfile",
+  "installCommand": "pnpm install",
   "buildCommand": "pnpm --filter @workspace/offloadr-app run build",
   "outputDirectory": "artifacts/offloadr-app/dist",
   "rewrites": [
