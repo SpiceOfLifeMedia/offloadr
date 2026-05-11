@@ -47,3 +47,34 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Offly hub — generated shared secret (never commit)
+artifacts/offly/hub/hub-secret.json
+
+# Environment variables / secrets — never commit
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.preview
+**/.env
+**/.env.local
+**/.env.*.local
+!**/.env.example
+
+# Logs
+*.log
+logs/
+
+# Vercel
+.vercel/
+
+# Build outputs (catch-all)
+build/
+.next/
+.turbo/
+.parcel-cache/
+
+# Offloadr — cloned from SpiceOfLifeMedia/offloadr; source of truth is that repo, not this workspace
+offloadr/
