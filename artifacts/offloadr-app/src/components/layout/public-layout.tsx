@@ -15,10 +15,9 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
           </Link>
 
           <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-            <a href="#producer-mode" className="hover:text-foreground transition-colors">Producer Mode</a>
-            <a href="#schools" className="hover:text-foreground transition-colors">For Schools</a>
-            <a href="#how-it-works" className="hover:text-foreground transition-colors">How it works</a>
-            <a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a>
+            <a href="#arc" className="hover:text-foreground transition-colors">How it works</a>
+            <a href="#editor" className="hover:text-foreground transition-colors">Editor handoff</a>
+            <a href="#everything" className="hover:text-foreground transition-colors">What you get</a>
           </nav>
 
           <div className="flex items-center gap-2">
@@ -27,11 +26,11 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
                 Log in
               </Button>
             </Link>
-            <a href="mailto:hello@offloadr.app?subject=Offloadr%20demo%20request">
+            <Link href="/register">
               <Button className="h-10 px-5 text-sm font-semibold shadow-sm">
-                Book a Demo
+                Start a project
               </Button>
-            </a>
+            </Link>
           </div>
         </div>
       </header>
@@ -40,7 +39,7 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
       </main>
       <footer className="border-t py-12 bg-muted/30">
         <div className="container text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} Offloadr. The recording confidence platform for schools and studios.
+          &copy; {new Date().getFullYear()} Offloadr. The layer between the session ending and the project being editable.
         </div>
       </footer>
     </div>

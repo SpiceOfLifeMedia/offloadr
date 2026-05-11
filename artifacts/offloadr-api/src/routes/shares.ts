@@ -1,12 +1,14 @@
 import { Router, type IRouter } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
+import archiver from "archiver";
 import { db, editorSharesTable, projectsTable, mediaFilesTable, participantsTable } from "@workspace/db";
 import { eq, and } from "drizzle-orm";
 import { requireAuth, getUserId } from "../lib/auth";
 import { logActivity } from "../lib/activity";
 import { parseBody } from "../lib/validate";
-import { sanitizeMediaFiles } from "../lib/legacyFiles";
+import { sanitizeMediaFiles, hasUsableStoragePath } from "../lib/legacyFiles";
+import { getStorageFile, streamStorageFile } from "../lib/objectStorage";
 
 const router: IRouter = Router();
 
@@ -84,6 +86,79 @@ router.get("/share/:token", async (req, res): Promise<void> => {
     participants,
     share,
   });
+});
+
+// Stream a ZIP of all available files in the project, organised by folder.
+// Public — gated by share token only. Missing/legacy files are skipped.
+router.get("/share/:token/download-all", async (req, res): Promise<void> => {
+  const raw = Array.isArray(req.params.token) ? req.params.token[0] : req.params.token;
+  const token = raw;
+
+  const [share] = await db.select().from(editorSharesTable).where(eq(editorSharesTable.shareToken, token));
+  if (!share || !share.isActive) {
+    res.status(404).json({ error: "Not Found", message: "Share link not found or disabled" });
+    return;
+  }
+  if (share.expiresAt && new Date(share.expiresAt) < new Date()) {
+    res.status(404).json({ error: "Not Found", message: "Share link has expired" });
+    return;
+  }
+
+  const [project] = await db.select().from(projectsTable).where(eq(projectsTable.id, share.projectId));
+  if (!project) {
+    res.status(404).json({ error: "Not Found", message: "Project not found" });
+    return;
+  }
+
+  const rawFiles = await db.select().from(mediaFilesTable).where(eq(mediaFilesTable.projectId, project.id));
+  const files = sanitizeMediaFiles(rawFiles).filter((f) => !f.isMissing && hasUsableStoragePath(f.storagePath));
+
+  if (files.length === 0) {
+    res.status(404).json({ error: "Not Found", message: "No downloadable files in this project" });
+    return;
+  }
+
+  const folderFor = (type: string): string => {
+    switch (type) {
+      case "audio": return "01_AUDIO";
+      case "video": return "02_VIDEO";
+      case "project_file": return "03_PROJECT_FILES";
+      case "export": return "04_EXPORTS";
+      case "document": return "05_NOTES";
+      default: return "06_OTHER";
+    }
+  };
+
+  const safe = (s: string): string => s.replace(/[/\\?%*:|"<>]/g, "_");
+  const zipName = `${safe(project.projectName || `project-${project.id}`)}.zip`;
+
+  res.setHeader("Content-Type", "application/zip");
+  res.setHeader("Content-Disposition", `attachment; filename="${zipName}"`);
+
+  const archive = archiver("zip", { zlib: { level: 0 } });
+  archive.on("error", (err) => {
+    req.log.error({ err, projectId: project.id }, "ZIP stream error");
+    if (!res.headersSent) {
+      res.status(500).end();
+    } else {
+      res.destroy(err);
+    }
+  });
+  archive.pipe(res);
+
+  for (const file of files) {
+    try {
+      const gcsFile = await getStorageFile(file.storagePath as string);
+      const stream = streamStorageFile(gcsFile);
+      const folder = folderFor(file.fileType);
+      const name = safe(file.originalFileName);
+      archive.append(stream, { name: `${folder}/${name}` });
+    } catch (err) {
+      req.log.warn({ err, fileId: file.id }, "Skipping file in ZIP — fetch failed");
+    }
+  }
+
+  await archive.finalize();
 });
 
 router.patch("/share/:token/disable", requireAuth, async (req, res): Promise<void> => {

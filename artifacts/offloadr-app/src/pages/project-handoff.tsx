@@ -230,7 +230,15 @@ export default function ProjectHandoff() {
                     </div>
                     <Button className="w-full gap-2" onClick={copyShareUrl}>
                       <Copy className="h-4 w-4" />
-                      Copy Link
+                      Copy link
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full gap-2"
+                      onClick={() => window.open(shareUrl, "_blank", "noopener,noreferrer")}
+                      data-testid="button-preview-as-editor"
+                    >
+                      Preview as editor
                     </Button>
                   </>
                 ) : (
@@ -243,7 +251,7 @@ export default function ProjectHandoff() {
                       ? <Loader2 className="h-4 w-4 animate-spin" />
                       : <Copy className="h-4 w-4" />
                     }
-                    Create Editor Link
+                    Create editor link
                   </Button>
                 )}
               </CardContent>

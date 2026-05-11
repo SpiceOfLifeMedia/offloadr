@@ -5,8 +5,10 @@ import {
   useListRecordingSessions,
   useCreateRecordingSession,
   useUpdateRecordingSession,
+  useListParticipants,
   getListRecordingSessionsQueryKey,
   getGetProjectQueryKey,
+  getListParticipantsQueryKey,
   type RecordingSession,
 } from "@/api-client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -15,14 +17,18 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 
 type Status = RecordingSession["status"];
 
-type ConfidenceKey = "audio" | "video" | "storage" | "podcart";
+type ConfidenceKey = "audio" | "video" | "storage" | "helper";
 
 const CONFIDENCE_LABELS: Record<ConfidenceKey, string> = {
-  audio: "Audio working",
-  video: "Video working",
-  storage: "Storage ready",
-  podcart: "Podcart connected",
+  audio: "Audio",
+  video: "Camera feeds",
+  storage: "Recording drive",
+  helper: "Helper app",
 };
+
+// Confidence dots are click-to-toggle in dev so we can demo failure states.
+// In production they are read-only display.
+const CONFIDENCE_INTERACTIVE = import.meta.env.DEV;
 
 function formatTimer(ms: number): string {
   const totalMs = Math.max(0, Math.floor(ms));
@@ -44,27 +50,26 @@ export default function ProducerMode() {
   const { data: sessions } = useListRecordingSessions(projectId, {
     query: { enabled: !!projectId, queryKey: getListRecordingSessionsQueryKey(projectId) },
   });
+  const { data: participants } = useListParticipants(projectId, {
+    query: { enabled: !!projectId, queryKey: getListParticipantsQueryKey(projectId) },
+  });
 
   const createSession = useCreateRecordingSession();
   const updateSession = useUpdateRecordingSession();
 
-  // Simulated confidence — V1 has no real hardware. Defaults to all green; user can toggle.
+  // Confidence — V1 has no real hardware. Defaults to all green.
   const [confidence, setConfidence] = useState<Record<ConfidenceKey, "green" | "amber" | "red">>({
     audio: "green",
     video: "green",
     storage: "green",
-    podcart: "green",
+    helper: "green",
   });
-  const lastChecked = useMemo(() => new Date(), [confidence]);
 
-  // Active session is server-authoritative. Adopt the latest non-terminal session if present;
-  // otherwise honour any locally-tracked id (covers a freshly-completed session shown in overlay).
+  // Active session is server-authoritative.
   const [activeId, setActiveId] = useState<number | null>(null);
   const serverActive = useMemo<RecordingSession | undefined>(() => {
     if (!sessions) return undefined;
-    return sessions.find(
-      (s) => s.status !== "complete" && s.status !== "error",
-    );
+    return sessions.find((s) => s.status !== "complete" && s.status !== "error");
   }, [sessions]);
   useEffect(() => {
     if (serverActive && serverActive.id !== activeId) {
@@ -75,6 +80,16 @@ export default function ProducerMode() {
     () => sessions?.find((s) => s.id === activeId) ?? serverActive,
     [sessions, activeId, serverActive],
   );
+
+  // Take number = next take after the most recent completed take, or 1.
+  const completedTakeCount = useMemo(
+    () => (sessions ?? []).filter((s) => s.status === "complete").length,
+    [sessions],
+  );
+  const currentTakeNumber =
+    active && active.status !== "complete" && active.status !== "error"
+      ? completedTakeCount + 1
+      : completedTakeCount + 1;
 
   // Timer
   const [now, setNow] = useState<number>(Date.now());
@@ -104,34 +119,13 @@ export default function ProducerMode() {
 
   // Checklist
   const checklist = useMemo(() => {
-    const items: { label: string; ok: boolean; fix: string }[] = [
-      {
-        label: "Project named",
-        ok: !!project?.projectName,
-        fix: "Add a project name in the project setup.",
-      },
-      {
-        label: "Audio working",
-        ok: confidence.audio === "green",
-        fix: "Check the RODECaster audio input and levels.",
-      },
-      {
-        label: "Video working",
-        ok: confidence.video === "green",
-        fix: "Check the RODECaster Video and camera feeds.",
-      },
-      {
-        label: "Storage ready",
-        ok: confidence.storage === "green",
-        fix: "Check the Mac Mini recording drive has free space.",
-      },
-      {
-        label: "Podcart connected",
-        ok: confidence.podcart === "green",
-        fix: "Reconnect the Podcart helper to this project.",
-      },
+    return [
+      { label: "Project named", ok: !!project?.projectName, fix: "Add a project name in the project setup." },
+      { label: "Audio", ok: confidence.audio === "green", fix: "Check audio inputs and levels." },
+      { label: "Camera feeds", ok: confidence.video === "green", fix: "Check camera feeds." },
+      { label: "Recording drive", ok: confidence.storage === "green", fix: "Check the recording drive has free space." },
+      { label: "Helper app", ok: confidence.helper === "green", fix: "Reconnect the helper app to this project." },
     ];
-    return items;
   }, [project?.projectName, confidence]);
 
   const checklistOk = checklist.every((c) => c.ok);
@@ -157,7 +151,6 @@ export default function ProducerMode() {
       await transitionTo(active.id, "recording");
       return;
     }
-    // Create idle → ready → recording
     createSession.mutate(
       { id: projectId, data: {} },
       {
@@ -180,7 +173,6 @@ export default function ProducerMode() {
     try {
       await transitionTo(active.id, "stopping");
       await transitionTo(active.id, "uploading");
-      // Simulate upload progress
       setUploadPct(0);
       if (uploadTimerRef.current) clearInterval(uploadTimerRef.current);
       uploadTimerRef.current = setInterval(() => {
@@ -188,7 +180,6 @@ export default function ProducerMode() {
           const next = Math.min(100, p + Math.random() * 9 + 4);
           if (next >= 100) {
             if (uploadTimerRef.current) clearInterval(uploadTimerRef.current);
-            // Finalise: simulated lightweight file refs
             const fileRefs = [
               { id: `sim-${active.id}-master`, label: "Master mix (simulated)" },
               { id: `sim-${active.id}-multitrack`, label: "Multitrack stems (simulated)" },
@@ -212,7 +203,7 @@ export default function ProducerMode() {
 
   // Status banner copy
   const statusCopy: Record<Status, { headline: string; sub: string; tone: string }> = {
-    idle: { headline: "Idle", sub: "Get the Podcart ready, then press RECORD.", tone: "text-zinc-300" },
+    idle: { headline: "Standby", sub: "Get the helper app ready, then press RECORD.", tone: "text-zinc-300" },
     ready: { headline: "Ready", sub: "All checks passed. Press RECORD to start.", tone: "text-emerald-400" },
     recording: { headline: "Recording", sub: "Session is live.", tone: "text-red-400" },
     stopping: { headline: "Stopping", sub: "Closing out the session…", tone: "text-amber-300" },
@@ -223,7 +214,25 @@ export default function ProducerMode() {
 
   const currentStatus: Status = active?.status ?? (checklistOk ? "ready" : "idle");
   const recordEnabled =
-    checklistOk && (!active || active.status === "ready" || active.status === "idle" || active.status === "complete" || active.status === "error");
+    checklistOk &&
+    (!active ||
+      active.status === "ready" ||
+      active.status === "idle" ||
+      active.status === "complete" ||
+      active.status === "error");
+
+  // Talent line: up to 3 names, then "+N more". Mic labels collapsed if any present.
+  const talentList = (participants ?? []).map((p) => p.name).filter(Boolean);
+  const talentSummary =
+    talentList.length === 0
+      ? null
+      : talentList.length <= 3
+        ? talentList.join(", ")
+        : `${talentList.slice(0, 3).join(", ")} +${talentList.length - 3} more`;
+  const micLabels = (participants ?? [])
+    .map((p) => p.micLabel)
+    .filter((m): m is string => !!m && m.trim() !== "");
+  const micSummary = micLabels.length > 0 ? micLabels.join(" · ") : null;
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white flex flex-col">
@@ -239,22 +248,65 @@ export default function ProducerMode() {
         </div>
       </div>
 
+      {/* Take/talent strip — the production context */}
+      {(project || talentSummary) && (
+        <div className="border-b border-zinc-900 bg-zinc-900/40 px-6 py-3">
+          <div className="max-w-4xl mx-auto flex flex-wrap items-center gap-x-6 gap-y-1.5 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 font-semibold">
+                Next take
+              </span>
+              <span className="font-mono font-semibold text-white tabular-nums">
+                #{String(currentTakeNumber).padStart(2, "0")}
+              </span>
+            </div>
+            {project?.episodeTitle && (
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 font-semibold">
+                  Episode
+                </span>
+                <span className="text-zinc-200 truncate max-w-xs">{project.episodeTitle}</span>
+              </div>
+            )}
+            {talentSummary && (
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 font-semibold">
+                  Talent
+                </span>
+                <span className="text-zinc-200">{talentSummary}</span>
+              </div>
+            )}
+            {micSummary && (
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] uppercase tracking-[0.18em] text-zinc-500 font-semibold">
+                  Mics
+                </span>
+                <span className="font-mono text-zinc-300 text-xs">{micSummary}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Main appliance area */}
       <div className="flex-1 flex flex-col items-center justify-center px-6">
-        {/* Huge status text */}
         <div className="text-center mb-8">
-          <div className={`text-6xl md:text-8xl font-bold tracking-tight ${statusCopy[currentStatus].tone}`}>
+          <div
+            className={`text-6xl md:text-8xl font-bold tracking-tight ${statusCopy[currentStatus].tone}`}
+          >
             {statusCopy[currentStatus].headline}
           </div>
           <div className="mt-3 text-zinc-400 text-lg">{statusCopy[currentStatus].sub}</div>
         </div>
 
-        {/* Timer */}
-        <div className={`font-mono text-5xl md:text-7xl mb-10 tabular-nums ${active?.status === "recording" ? "text-red-400" : "text-zinc-600"}`}>
+        <div
+          className={`font-mono text-5xl md:text-7xl mb-10 tabular-nums ${
+            active?.status === "recording" ? "text-red-400" : "text-zinc-600"
+          }`}
+        >
           {formatTimer(elapsedMs)}
         </div>
 
-        {/* RECORD / STOP */}
         {active?.status === "recording" ? (
           <button
             onClick={() => setShowStopConfirm(true)}
@@ -282,14 +334,14 @@ export default function ProducerMode() {
           </button>
         )}
 
-        {/* Checklist failure hint */}
         {!checklistOk && !active && (
           <div className="mt-8 max-w-md w-full bg-zinc-900 border border-zinc-800 rounded-lg p-4">
             <div className="text-amber-400 font-semibold mb-2">Fix this before recording:</div>
             <ul className="space-y-1 text-zinc-300 text-sm">
               {failing.map((f) => (
                 <li key={f.label}>
-                  <span className="font-medium">{f.label}.</span> <span className="text-zinc-400">{f.fix}</span>
+                  <span className="font-medium">{f.label}.</span>{" "}
+                  <span className="text-zinc-400">{f.fix}</span>
                 </li>
               ))}
             </ul>
@@ -304,29 +356,32 @@ export default function ProducerMode() {
             const state = confidence[k];
             const dotColor =
               state === "green" ? "bg-emerald-500" : state === "amber" ? "bg-amber-400" : "bg-red-500";
-            return (
-              <button
-                key={k}
-                onClick={() =>
-                  setConfidence((c) => ({
-                    ...c,
-                    [k]: c[k] === "green" ? "red" : "green",
-                  }))
+            const Wrapper: React.ElementType = CONFIDENCE_INTERACTIVE ? "button" : "div";
+            const wrapperProps = CONFIDENCE_INTERACTIVE
+              ? {
+                  onClick: () =>
+                    setConfidence((c) => ({ ...c, [k]: c[k] === "green" ? "red" : "green" })),
+                  "data-testid": `confidence-${k}`,
                 }
-                className="flex items-center gap-3 text-left bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg px-4 py-3"
-                data-testid={`confidence-${k}`}
+              : {};
+            return (
+              <Wrapper
+                key={k}
+                {...wrapperProps}
+                className={`flex items-center gap-3 text-left bg-zinc-900 ${
+                  CONFIDENCE_INTERACTIVE ? "hover:bg-zinc-800 cursor-pointer" : ""
+                } border border-zinc-800 rounded-lg px-4 py-3`}
               >
                 <span className={`h-3 w-3 rounded-full ${dotColor}`} />
                 <div className="flex-1">
                   <div className="text-sm font-medium">{CONFIDENCE_LABELS[k]}</div>
-                  <div className="text-xs text-zinc-500">checked {lastChecked.toLocaleTimeString()}</div>
+                  <div className="text-xs text-zinc-500">
+                    {state === "green" ? "OK" : state === "amber" ? "Check" : "Not ready"}
+                  </div>
                 </div>
-              </button>
+              </Wrapper>
             );
           })}
-        </div>
-        <div className="text-center text-xs text-zinc-600 mt-3">
-          V1: confidence indicators are simulated. The Mac Mini helper will report real status in a later release.
         </div>
       </div>
 

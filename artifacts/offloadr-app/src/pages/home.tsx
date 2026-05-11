@@ -1,52 +1,50 @@
-import { PublicLayout } from "@/components/layout/public-layout";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
+import { PublicLayout } from "@/components/layout/public-layout";
 import {
-  Mic,
-  Video,
-  HardDrive,
-  Cable,
-  CloudUpload,
-  CheckCircle2,
-  Radio,
-  GraduationCap,
-  ShieldCheck,
-  Sparkles,
   ArrowRight,
+  CheckCircle2,
+  AlertTriangle,
+  FolderOpen,
+  FileAudio,
+  FileVideo,
+  File as FileIcon,
+  Square,
+  CloudUpload,
+  Folders,
+  Inbox,
 } from "lucide-react";
 
 /* -------------------------------------------------------------------------- */
-/*  Atoms                                                                     */
+/*  Atoms                                                                      */
 /* -------------------------------------------------------------------------- */
 
-function Dot({ tone = "ok" }: { tone?: "ok" | "warn" | "off" }) {
+function Dot({ tone = "ok" }: { tone?: "ok" | "warn" | "off" | "rec" }) {
   const cls =
     tone === "ok"
-      ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]"
-      : tone === "warn"
-        ? "bg-amber-500"
-        : "bg-muted-foreground/40";
-  return <span className={`inline-block h-2 w-2 rounded-full ${cls}`} />;
+      ? "bg-emerald-500"
+      : tone === "rec"
+        ? "bg-red-500"
+        : tone === "warn"
+          ? "bg-amber-500"
+          : "bg-muted-foreground/40";
+  return <span className={`inline-block h-1.5 w-1.5 rounded-full ${cls}`} />;
 }
 
-function StatusPill({
-  tone,
-  children,
-}: {
-  tone: "ready" | "recording" | "uploading" | "complete";
-  children: React.ReactNode;
-}) {
-  const map = {
-    ready: "bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/20",
-    recording: "bg-red-500/10 text-red-600 ring-1 ring-red-500/20",
-    uploading: "bg-blue-500/10 text-blue-600 ring-1 ring-blue-500/20",
-    complete: "bg-foreground/5 text-foreground ring-1 ring-foreground/10",
-  } as const;
+type StageTone = "rec" | "uploading" | "ready";
+
+function StagePill({ tone, children }: { tone: StageTone; children: React.ReactNode }) {
+  const map: Record<StageTone, string> = {
+    rec: "bg-red-500/10 text-red-600 ring-red-500/20",
+    uploading: "bg-amber-500/10 text-amber-700 ring-amber-500/20",
+    ready: "bg-emerald-500/10 text-emerald-700 ring-emerald-500/20",
+  };
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${map[tone]}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider ring-1 ${map[tone]}`}
     >
-      <Dot tone={tone === "complete" ? "off" : "ok"} />
+      <Dot tone={tone === "rec" ? "rec" : tone === "ready" ? "ok" : "warn"} />
       {children}
     </span>
   );
@@ -54,323 +52,352 @@ function StatusPill({
 
 function SectionEyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">
+    <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
       {children}
     </div>
   );
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Hero — dominant cinematic mockup                                          */
+/*  Hero composition — animated 3-stage status                                 */
 /* -------------------------------------------------------------------------- */
 
-function HeroDashboard() {
+const STAGES = ["rec", "uploading", "ready"] as const;
+type Stage = (typeof STAGES)[number];
+
+function HeroComposition({ stage }: { stage: Stage }) {
+  const elapsed = stage === "rec" ? "00:42:18" : "00:54:02";
+  const pct = stage === "uploading" ? 78 : stage === "ready" ? 100 : 0;
+
   return (
-    <div className="relative rounded-2xl border border-border/60 bg-card shadow-[0_30px_80px_-20px_rgba(15,23,42,0.25)] ring-1 ring-foreground/5 overflow-hidden">
-      <div className="flex items-center gap-2 border-b border-border/60 bg-muted/40 px-4 py-2.5">
-        <div className="h-2.5 w-2.5 rounded-full bg-red-400/60" />
-        <div className="h-2.5 w-2.5 rounded-full bg-amber-400/60" />
-        <div className="h-2.5 w-2.5 rounded-full bg-emerald-400/60" />
-        <div className="ml-3 truncate text-xs text-muted-foreground font-mono">
-          offloadr.app / studio-a / live-session
+    <div className="rounded-xl border border-border/70 bg-card shadow-[0_20px_60px_-25px_rgba(0,0,0,0.25)] overflow-hidden">
+      {/* Window chrome */}
+      <div className="flex items-center gap-2 border-b border-border/60 bg-muted/30 px-4 py-2.5">
+        <div className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
+        <div className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
+        <div className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
+        <div className="ml-3 truncate text-[11px] text-muted-foreground font-mono">
+          offloadr / founders-brief / studio-a
         </div>
-        <div className="ml-auto flex items-center gap-2">
-          <span className="relative inline-flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-60" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
-          </span>
-          <span className="text-[11px] font-medium text-red-600">LIVE</span>
+        <div className="ml-auto">
+          {stage === "rec" && <StagePill tone="rec">Recording</StagePill>}
+          {stage === "uploading" && <StagePill tone="uploading">Uploading</StagePill>}
+          {stage === "ready" && <StagePill tone="ready">Ready for editor</StagePill>}
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-[240px_1fr]">
-        {/* sidebar */}
-        <aside className="hidden lg:flex flex-col gap-1 border-r border-border/60 bg-muted/20 p-5 text-sm">
-          <div className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            Workspace
+      {/* Body */}
+      <div className="grid md:grid-cols-[200px_1fr]">
+        {/* Sidebar — hardware list */}
+        <aside className="hidden md:block border-r border-border/60 bg-muted/10 px-4 py-5">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground mb-3">
+            Hardware
           </div>
-          <div className="rounded-md bg-foreground/[0.06] px-3 py-2 font-medium flex items-center gap-2">
-            <Radio className="h-3.5 w-3.5 text-blue-600" />
-            Live Sessions
-          </div>
-          <div className="rounded-md px-3 py-2 text-muted-foreground flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40" />
-            Projects
-          </div>
-          <div className="rounded-md px-3 py-2 text-muted-foreground flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40" />
-            Storage
-          </div>
-          <div className="rounded-md px-3 py-2 text-muted-foreground flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40" />
-            Editors
-          </div>
-
-          <div className="mt-6 px-2 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            Connected hardware
-          </div>
-          <div className="space-y-1.5 px-2 text-xs">
-            <div className="flex items-center justify-between text-muted-foreground">
-              <span>RODECaster Pro II</span>
-              <Dot tone="ok" />
-            </div>
-            <div className="flex items-center justify-between text-muted-foreground">
-              <span>Camera A · B · C</span>
-              <Dot tone="ok" />
-            </div>
-            <div className="flex items-center justify-between text-muted-foreground">
-              <span>Podcart · Studio A</span>
-              <Dot tone="ok" />
-            </div>
+          <div className="space-y-2 text-xs">
+            {[
+              { name: "RODECaster Pro II", on: true },
+              { name: "Camera A", on: true },
+              { name: "Camera B", on: true },
+              { name: "Camera C", on: stage !== "ready" },
+              { name: "Recording drive", on: true },
+              { name: "Helper app", on: true },
+            ].map((d) => (
+              <div key={d.name} className="flex items-center justify-between text-muted-foreground">
+                <span>{d.name}</span>
+                <Dot tone={d.on ? "ok" : "off"} />
+              </div>
+            ))}
           </div>
         </aside>
 
-        {/* main */}
-        <div className="p-5 md:p-7 space-y-5">
-          <div className="flex items-center justify-between">
-            <div>
+        {/* Main panel — switches per stage */}
+        <div className="p-5 md:p-7 min-h-[300px]">
+          {stage === "rec" && (
+            <div className="space-y-4">
+              <div className="flex items-baseline justify-between">
+                <div>
+                  <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                    Take 04 · in progress
+                  </div>
+                  <div className="text-base font-semibold mt-1">
+                    Episode 14 — How to read a term sheet
+                  </div>
+                </div>
+                <div className="font-mono tabular-nums text-2xl text-red-600">{elapsed}</div>
+              </div>
               <div className="text-xs text-muted-foreground">
-                Greenfield High · Studio A
+                Talent: Jane Doe, David Chen, Marco Reyes · Mics 1, 2, 3
               </div>
-              <div className="text-base font-semibold">Live productions</div>
+              <div className="rounded-lg border border-border/60 bg-background p-4">
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground mb-2">
+                  Live signal
+                </div>
+                <div className="grid grid-cols-3 gap-3 text-xs">
+                  {[
+                    { m: "Mic 1", w: 68 },
+                    { m: "Mic 2", w: 54 },
+                    { m: "Mic 3", w: 72 },
+                  ].map(({ m, w }) => (
+                    <div key={m} className="space-y-1.5">
+                      <div className="text-muted-foreground">{m}</div>
+                      <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-emerald-500"
+                          style={{ width: `${w}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-            <div className="hidden sm:flex h-9 items-center rounded-md bg-foreground px-3.5 text-xs font-medium text-background">
-              + New session
-            </div>
-          </div>
+          )}
 
-          {/* live recording row */}
-          <div className="rounded-xl border border-border/60 bg-background p-4 shadow-sm">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="truncate text-sm font-semibold">
-                  Year 11 Oracy — Debate Final
+          {stage === "uploading" && (
+            <div className="space-y-4">
+              <div>
+                <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                  Stopped 12 seconds ago · 9 files
                 </div>
-                <div className="mt-0.5 text-xs text-muted-foreground">
-                  Studio A · 3 cameras · RODECaster Pro II · 4 mics
-                </div>
+                <div className="text-base font-semibold mt-1">Pulling files into the project…</div>
               </div>
-              <StatusPill tone="recording">Recording</StatusPill>
-            </div>
-            <div className="mt-3 flex items-center gap-4 text-xs flex-wrap">
-              <div className="flex items-center gap-1.5"><Mic className="h-3 w-3 text-emerald-500" /> Audio</div>
-              <div className="flex items-center gap-1.5"><Video className="h-3 w-3 text-emerald-500" /> Video</div>
-              <div className="flex items-center gap-1.5"><HardDrive className="h-3 w-3 text-emerald-500" /> Storage</div>
-              <div className="flex items-center gap-1.5"><Cable className="h-3 w-3 text-emerald-500" /> Podcart</div>
-              <div className="ml-auto font-mono tabular-nums text-foreground text-sm">
-                00:42:18
+              <div className="space-y-2.5">
+                {[
+                  { n: "lav-jane-doe.wav", p: 100, role: "lav" },
+                  { n: "lav-david-chen.wav", p: 100, role: "lav" },
+                  { n: "lav-marco-reyes.wav", p: 96, role: "lav" },
+                  { n: "cam-a-wide.mp4", p: 64, role: "cam-a" },
+                  { n: "cam-b-host.mp4", p: 41, role: "cam-b" },
+                ].map((f) => (
+                  <div
+                    key={f.n}
+                    className="flex items-center gap-3 rounded-md border border-border/50 bg-background px-3 py-2 text-xs"
+                  >
+                    {f.n.endsWith(".mp4") ? (
+                      <FileVideo className="h-3.5 w-3.5 text-purple-500 flex-shrink-0" />
+                    ) : (
+                      <FileAudio className="h-3.5 w-3.5 text-blue-500 flex-shrink-0" />
+                    )}
+                    <span className="font-mono truncate flex-1">{f.n}</span>
+                    <span className="text-muted-foreground tabular-nums">{f.p}%</span>
+                    <div className="h-1 w-16 rounded-full bg-muted overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-amber-500 transition-all duration-700"
+                        style={{ width: `${f.p}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="text-[11px] text-muted-foreground">
+                Total {pct}% · resumes if the connection drops
               </div>
             </div>
-          </div>
+          )}
 
-          {/* uploading */}
-          <div className="rounded-xl border border-border/60 bg-background p-4 shadow-sm">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="truncate text-sm font-semibold">
-                  News Bulletin — Wk 14
+          {stage === "ready" && (
+            <div className="space-y-4">
+              <div className="flex items-baseline justify-between">
+                <div>
+                  <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                    Project complete
+                  </div>
+                  <div className="text-base font-semibold mt-1">
+                    Founder's Brief · Episode 14
+                  </div>
                 </div>
-                <div className="mt-0.5 text-xs text-muted-foreground">
-                  Auto-offload from local source · 12 of 14 files
+                <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div className="rounded-lg border border-emerald-200 bg-emerald-50/60 dark:bg-emerald-950/20 dark:border-emerald-900 p-3 flex items-center gap-3 text-sm">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+                <div>
+                  <span className="font-semibold">9 files · 48 GB · </span>
+                  <span className="text-emerald-700 dark:text-emerald-400">
+                    all verified · ready to edit
+                  </span>
                 </div>
               </div>
-              <StatusPill tone="uploading">Uploading</StatusPill>
+              <button className="w-full h-10 rounded-md bg-foreground text-background text-sm font-semibold inline-flex items-center justify-center gap-2">
+                Send to editor <ArrowRight className="h-4 w-4" />
+              </button>
+              <div className="text-[11px] text-muted-foreground text-center">
+                One link. Folder structure, notes, and missing-file checklist included.
+              </div>
             </div>
-            <div className="mt-3 space-y-1.5">
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>Pulling from Mac Mini · Studio B</span>
-                <span className="font-mono tabular-nums text-foreground">78%</span>
-              </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                <div className="h-full w-[78%] rounded-full bg-gradient-to-r from-blue-500 to-blue-400" />
-              </div>
-            </div>
-          </div>
-
-          {/* ready */}
-          <div className="rounded-xl border border-border/60 bg-background p-4 shadow-sm">
-            <div className="flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <div className="truncate text-sm font-semibold">
-                  Ep 142 — Founders Lounge
-                </div>
-                <div className="mt-0.5 text-xs text-muted-foreground">
-                  Folder organised · share link ready · all files present
-                </div>
-              </div>
-              <StatusPill tone="complete">Ready for editor</StatusPill>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-function FloatingProducerCard() {
+function HeroAnimation() {
+  const [stageIndex, setStageIndex] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setStageIndex((i) => (i + 1) % STAGES.length), 2400);
+    return () => clearInterval(t);
+  }, []);
+  const stage = STAGES[stageIndex];
+
   return (
-    <div className="relative w-[260px] rounded-2xl border border-zinc-800 bg-zinc-950 text-zinc-100 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.6)] overflow-hidden">
-      <div className="border-b border-zinc-800/80 px-4 py-2 text-[10px] uppercase tracking-[0.2em] text-zinc-500 flex items-center justify-between">
-        <span>Producer Mode</span>
-        <span className="flex items-center gap-1.5 text-red-400">
-          <span className="relative inline-flex h-1.5 w-1.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-60" />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-red-500" />
-          </span>
-          REC
-        </span>
-      </div>
-      <div className="p-5 space-y-4 text-center">
-        <div>
-          <div className="text-[10px] uppercase tracking-widest text-zinc-500">Recording</div>
-          <div className="mt-1 font-mono text-3xl tabular-nums">00:42:18</div>
-        </div>
-        <div className="relative mx-auto h-16 w-16">
-          <span className="absolute inset-0 animate-ping rounded-full bg-red-500/30" />
+    <div className="relative">
+      <HeroComposition stage={stage} />
+      {/* Stage indicator dots */}
+      <div className="mt-4 flex items-center justify-center gap-2">
+        {STAGES.map((s, i) => (
           <button
-            type="button"
-            aria-label="Stop recording"
-            className="relative h-16 w-16 rounded-full bg-red-600 ring-[6px] ring-red-600/20 flex items-center justify-center"
-          >
-            <span className="h-5 w-5 rounded-sm bg-zinc-100" />
-          </button>
-        </div>
-        <div className="grid grid-cols-2 gap-1.5 text-[10px] text-left">
-          <div className="flex items-center gap-1.5 rounded bg-zinc-900 px-2 py-1.5"><Dot tone="ok" /> Audio</div>
-          <div className="flex items-center gap-1.5 rounded bg-zinc-900 px-2 py-1.5"><Dot tone="ok" /> Video</div>
-          <div className="flex items-center gap-1.5 rounded bg-zinc-900 px-2 py-1.5"><Dot tone="ok" /> Storage</div>
-          <div className="flex items-center gap-1.5 rounded bg-zinc-900 px-2 py-1.5"><Dot tone="ok" /> Podcart</div>
-        </div>
+            key={s}
+            onClick={() => setStageIndex(i)}
+            aria-label={`Show stage ${s}`}
+            className={`h-1.5 rounded-full transition-all ${
+              i === stageIndex ? "w-8 bg-foreground" : "w-1.5 bg-muted-foreground/30"
+            }`}
+          />
+        ))}
       </div>
     </div>
   );
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Producer Mode — the WOW moment                                            */
+/*  Section 4 — Stop safely visual                                             */
 /* -------------------------------------------------------------------------- */
 
-function ProducerModeShowcase() {
-  const checks = [
-    { icon: Mic, label: "Audio Working", sub: "RODECaster · 4 mics" },
-    { icon: Video, label: "Video Working", sub: "3 cameras locked" },
-    { icon: HardDrive, label: "Storage Ready", sub: "412 GB available" },
-    { icon: Cable, label: "Podcart Connected", sub: "Studio A · linked" },
-    { icon: CloudUpload, label: "Upload Ready", sub: "Auto-offload armed" },
+function StopSafelyVisual() {
+  const files = [
+    { n: "lav-jane-doe.wav", size: "1.1 GB", state: "done" },
+    { n: "lav-david-chen.wav", size: "1.1 GB", state: "done" },
+    { n: "lav-marco-reyes.wav", size: "1.1 GB", state: "done" },
+    { n: "host-mic-mix.wav", size: "938 MB", state: "active" },
+    { n: "cam-a-wide.mp4", size: "17.2 GB", state: "queued" },
+    { n: "cam-b-host.mp4", size: "13.9 GB", state: "queued" },
   ];
 
   return (
-    <div className="relative mx-auto max-w-6xl rounded-[2rem] border border-zinc-800 bg-zinc-950 text-zinc-100 shadow-[0_50px_120px_-30px_rgba(220,38,38,0.35)] overflow-hidden">
-      {/* background glow */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-40 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-red-600/20 blur-[120px]" />
-        <div className="absolute bottom-0 left-0 h-[300px] w-[300px] rounded-full bg-blue-600/10 blur-[100px]" />
+    <div className="rounded-xl border border-border/70 bg-card overflow-hidden">
+      <div className="flex items-center justify-between border-b border-border/60 bg-muted/30 px-4 py-2.5 text-xs">
+        <span className="font-semibold">Founder's Brief — uploads</span>
+        <StagePill tone="uploading">Uploading</StagePill>
       </div>
-
-      <div className="relative grid lg:grid-cols-[1.1fr_1fr] gap-10 p-8 md:p-12 lg:p-16 items-center">
-        {/* left: giant record button + timer */}
-        <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
-          <div className="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-red-300">
-            <span className="relative inline-flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-70" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-red-500" />
-            </span>
-            Producer Mode · Live
-          </div>
-
-          <div className="mt-6 text-[11px] uppercase tracking-[0.25em] text-zinc-500">
-            Session timer
-          </div>
-          <div className="mt-1 font-mono text-6xl md:text-7xl tabular-nums tracking-tight">
-            01:12:04
-          </div>
-
-          <div className="mt-10 relative">
-            {/* halo */}
-            <span className="absolute inset-0 -m-6 rounded-full bg-red-600/20 blur-2xl" />
-            <span className="absolute inset-0 -m-2 rounded-full bg-red-600/30 blur-xl animate-pulse" />
-            <button
-              type="button"
-              aria-label="Stop recording"
-              className="relative h-44 w-44 md:h-52 md:w-52 rounded-full bg-gradient-to-b from-red-500 to-red-700 ring-[10px] ring-red-600/20 shadow-[0_20px_60px_-10px_rgba(220,38,38,0.7)] flex items-center justify-center transition-transform hover:scale-[1.02]"
-            >
-              <span className="absolute inset-3 rounded-full ring-1 ring-white/20" />
-              <span className="h-16 w-16 md:h-20 md:w-20 rounded-xl bg-white/95 shadow-inner" />
-            </button>
-          </div>
-
-          <div className="mt-8 max-w-sm text-sm text-zinc-400 leading-relaxed">
-            One screen. One button. The whole production under control.
-            Students press <span className="text-zinc-100 font-medium">RECORD</span> with confidence
-            and <span className="text-zinc-100 font-medium">STOP</span> without fear of losing the take.
-          </div>
-        </div>
-
-        {/* right: confidence checklist */}
-        <div className="space-y-3">
-          <div className="text-[11px] uppercase tracking-[0.25em] text-zinc-500">
-            Pre-flight confidence check
-          </div>
-          {checks.map(({ icon: Icon, label, sub }) => (
-            <div
-              key={label}
-              className="flex items-center gap-4 rounded-xl border border-zinc-800/80 bg-gradient-to-br from-zinc-900/90 to-zinc-900/40 px-4 py-3.5 backdrop-blur"
-            >
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 ring-1 ring-emerald-500/20">
-                <Icon className="h-4 w-4 text-emerald-400" />
-              </div>
-              <div className="flex-1">
-                <div className="text-sm font-semibold text-zinc-100">{label}</div>
-                <div className="text-xs text-zinc-500">{sub}</div>
-              </div>
-              <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+      <div className="divide-y divide-border/60">
+        {files.map((f) => (
+          <div key={f.n} className="flex items-center gap-3 px-4 py-2.5 text-xs">
+            {f.n.endsWith(".mp4") ? (
+              <FileVideo className="h-3.5 w-3.5 text-purple-500" />
+            ) : (
+              <FileAudio className="h-3.5 w-3.5 text-blue-500" />
+            )}
+            <span className="font-mono flex-1 truncate">{f.n}</span>
+            <span className="tabular-nums text-muted-foreground w-16 text-right">{f.size}</span>
+            <div className="w-24 flex items-center gap-2">
+              {f.state === "done" && <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />}
+              {f.state === "done" && <span className="text-emerald-700">Verified</span>}
+              {f.state === "active" && (
+                <div className="h-1 w-full rounded-full bg-muted overflow-hidden">
+                  <div className="h-full w-[62%] rounded-full bg-amber-500" />
+                </div>
+              )}
+              {f.state === "queued" && <span className="text-muted-foreground">Queued</span>}
             </div>
-          ))}
-
-          <div className="mt-2 flex items-center gap-3 rounded-xl border border-blue-500/20 bg-blue-500/5 px-4 py-3 text-sm text-blue-200">
-            <ShieldCheck className="h-4 w-4 text-blue-300 flex-shrink-0" />
-            All systems green. Safe to record.
           </div>
-        </div>
+        ))}
+      </div>
+      <div className="border-t border-border/60 bg-muted/20 px-4 py-2.5 text-[11px] text-muted-foreground flex items-center justify-between">
+        <span>Project: Founder's Brief / Episode 14</span>
+        <span className="font-mono tabular-nums">3 of 6 verified</span>
       </div>
     </div>
   );
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Editor handoff mockup                                                     */
+/*  Section 5 — Producer Mode + missing-file callout                           */
 /* -------------------------------------------------------------------------- */
 
-function HandoffMockup() {
+function ProducerModeMock() {
   return (
-    <div className="relative mx-auto w-full max-w-lg">
-      <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-blue-500/10 to-emerald-500/5 blur-2xl" />
-      <div className="relative rounded-2xl border border-border/60 bg-card shadow-xl overflow-hidden">
-        <div className="flex items-center justify-between border-b border-border/60 bg-muted/30 px-5 py-3">
-          <div className="text-sm font-semibold">Ep 142 — Founders Lounge</div>
-          <StatusPill tone="complete">Ready for editor</StatusPill>
-        </div>
-        <div className="divide-y divide-border/60 text-sm">
-          {[
-            { name: "01_audio / multitrack.wav", meta: "1.2 GB" },
-            { name: "02_video / cam_a.mov", meta: "8.4 GB" },
-            { name: "02_video / cam_b.mov", meta: "8.1 GB" },
-            { name: "02_video / cam_c.mov", meta: "7.9 GB" },
-            { name: "03_notes / producer.md", meta: "2 KB" },
-          ].map((f) => (
-            <div key={f.name} className="flex items-center justify-between px-5 py-3">
-              <div className="font-mono text-xs text-muted-foreground">{f.name}</div>
-              <div className="text-xs tabular-nums text-muted-foreground">{f.meta}</div>
-            </div>
-          ))}
-        </div>
-        <div className="flex items-center justify-between border-t border-border/60 bg-muted/20 px-5 py-3 text-xs">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-            <span className="text-muted-foreground">All expected files present</span>
+    <div className="rounded-xl bg-zinc-950 text-zinc-100 overflow-hidden border border-zinc-900 shadow-[0_20px_60px_-25px_rgba(0,0,0,0.5)]">
+      <div className="flex items-center justify-between border-b border-zinc-900 px-4 py-2.5 text-[11px]">
+        <span className="text-zinc-500">Producer Mode</span>
+        <span className="text-zinc-500">Founder's Brief · Studio A</span>
+      </div>
+
+      {/* take/talent strip */}
+      <div className="border-b border-zinc-900 bg-zinc-900/40 px-4 py-2.5 flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
+        <span>
+          <span className="text-zinc-500 uppercase tracking-wider mr-1.5">Next take</span>
+          <span className="font-mono font-semibold">#04</span>
+        </span>
+        <span>
+          <span className="text-zinc-500 uppercase tracking-wider mr-1.5">Talent</span>
+          Jane Doe, David Chen, Marco Reyes
+        </span>
+        <span>
+          <span className="text-zinc-500 uppercase tracking-wider mr-1.5">Mics</span>
+          <span className="font-mono">1 · 2 · 3</span>
+        </span>
+      </div>
+
+      {/* big status + record button */}
+      <div className="px-6 py-10 flex flex-col items-center text-center">
+        <div className="text-4xl font-bold tracking-tight text-emerald-400">Ready</div>
+        <div className="mt-1.5 text-xs text-zinc-500">All checks passed. Press RECORD to start.</div>
+        <div className="mt-5 font-mono text-3xl tabular-nums text-zinc-700">00:00:00</div>
+        <button
+          aria-label="Record"
+          className="mt-6 h-28 w-28 rounded-full bg-red-600 border-4 border-red-400 shadow-[0_0_40px_rgba(239,68,68,0.35)] flex flex-col items-center justify-center"
+        >
+          <span className="h-12 w-12 rounded-full bg-white" />
+          <span className="mt-1.5 text-xs font-semibold tracking-wide">RECORD</span>
+        </button>
+      </div>
+
+      {/* confidence dots */}
+      <div className="border-t border-zinc-900 px-4 py-3 grid grid-cols-4 gap-2 text-[11px]">
+        {["Audio", "Camera feeds", "Recording drive", "Helper app"].map((l) => (
+          <div
+            key={l}
+            className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded px-2.5 py-2"
+          >
+            <Dot tone="ok" />
+            <span className="text-zinc-300">{l}</span>
           </div>
-          <div className="rounded-md bg-foreground px-3 py-1.5 font-medium text-background">
-            Copy share link
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MissingFileCallout() {
+  return (
+    <div className="rounded-xl border border-amber-200 bg-amber-50/60 dark:bg-amber-950/20 dark:border-amber-900 p-5">
+      <div className="flex items-start gap-3">
+        <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+        <div className="flex-1 space-y-3">
+          <div>
+            <div className="text-sm font-semibold">Missing-file checklist</div>
+            <div className="text-xs text-muted-foreground mt-0.5">
+              Compared against the expected setup for this project.
+            </div>
+          </div>
+          <div className="space-y-1.5 text-xs font-mono">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">Expected lavs</span>
+              <span>3 found · 3 expected</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">Expected cameras</span>
+              <span className="text-amber-700">2 found · 3 expected</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">Expected project file</span>
+              <span>1 found</span>
+            </div>
+          </div>
+          <div className="rounded-md bg-background border border-border/60 px-3 py-2 text-xs flex items-center gap-2">
+            <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />
+            <span className="font-mono">cam-c-guest.mp4</span>
+            <span className="text-muted-foreground">— not received from Camera C</span>
           </div>
         </div>
       </div>
@@ -379,449 +406,282 @@ function HandoffMockup() {
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Page                                                                      */
+/*  Page                                                                       */
 /* -------------------------------------------------------------------------- */
 
 export default function Home() {
   return (
     <PublicLayout>
       <div className="flex flex-col">
-
-        {/* ─────────────────────────────────────────────────────────────── */}
-        {/* HERO                                                            */}
-        {/* ─────────────────────────────────────────────────────────────── */}
-        <section className="relative overflow-hidden">
-          {/* layered backdrop */}
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-muted/40" />
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-[600px] bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.12),transparent_60%)]" />
-          <div className="pointer-events-none absolute -left-32 top-40 h-96 w-96 rounded-full bg-blue-500/10 blur-3xl" />
-          <div className="pointer-events-none absolute -right-32 top-60 h-96 w-96 rounded-full bg-indigo-500/10 blur-3xl" />
-          {/* subtle grid */}
-          <div
-            className="pointer-events-none absolute inset-0 opacity-[0.04]"
-            style={{
-              backgroundImage:
-                "linear-gradient(to right, currentColor 1px, transparent 1px), linear-gradient(to bottom, currentColor 1px, transparent 1px)",
-              backgroundSize: "48px 48px",
-            }}
-          />
-
-          <div className="relative container pt-16 pb-32 md:pt-24 md:pb-40">
-            <div className="mx-auto max-w-4xl text-center space-y-7">
-              <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-background/80 px-3.5 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur">
-                <Sparkles className="h-3.5 w-3.5 text-blue-600" />
-                The recording confidence platform — built for schools, studios and Podcart
-              </div>
-
-              <h1 className="text-5xl md:text-7xl lg:text-[5.25rem] font-extrabold tracking-tight leading-[0.98]">
-                The operating system
-                <br />
-                <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-500 bg-clip-text text-transparent">
-                  for school media.
-                </span>
-              </h1>
-
-              <p className="mx-auto max-w-2xl text-lg md:text-xl text-muted-foreground leading-relaxed">
-                Record locally. Offload automatically. Producer Mode gives students
-                the confidence to run real productions — and gives teachers their
-                time back.
-              </p>
-
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-3">
-                <a href="mailto:hello@offloadr.app?subject=Offloadr%20demo%20request">
-                  <Button size="lg" className="h-12 px-8 text-base font-semibold shadow-lg shadow-blue-600/20">
-                    Book a Demo <ArrowRight className="ml-1.5 h-4 w-4" />
-                  </Button>
-                </a>
-                <a href="#producer-mode">
-                  <Button size="lg" variant="outline" className="h-12 px-7 text-base">
-                    See Producer Mode
-                  </Button>
-                </a>
-              </div>
-
-              <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-4 text-xs text-muted-foreground">
-                <span className="inline-flex items-center gap-1.5"><Dot tone="ok" /> Built for RODECaster Pro II</span>
-                <span className="inline-flex items-center gap-1.5"><Dot tone="ok" /> Multi-camera ready</span>
-                <span className="inline-flex items-center gap-1.5"><Dot tone="ok" /> Education-grade workflows</span>
-              </div>
-            </div>
-
-            {/* DOMINANT MOCKUP */}
-            <div className="relative mx-auto mt-20 max-w-7xl">
-              {/* under-glow */}
-              <div className="pointer-events-none absolute -inset-x-12 -bottom-12 h-32 rounded-[3rem] bg-blue-500/25 blur-3xl" />
-              <div className="pointer-events-none absolute inset-x-1/4 -bottom-4 h-12 rounded-full bg-foreground/10 blur-2xl" />
-
-              <HeroDashboard />
-
-              {/* floating producer-mode card overlapping */}
-              <div className="hidden md:block absolute -right-4 lg:-right-12 -bottom-12 lg:-bottom-16 z-10">
-                <FloatingProducerCard />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ─────────────────────────────────────────────────────────────── */}
-        {/* TRUST STRIP                                                     */}
-        {/* ─────────────────────────────────────────────────────────────── */}
-        <section className="border-y border-border/60 bg-muted/20">
-          <div className="container py-10">
-            <div className="grid grid-cols-2 gap-6 md:grid-cols-4 text-center">
-              {[
-                { stat: "0", label: "files dragged by hand" },
-                { stat: "1-tap", label: "recording confidence" },
-                { stat: "100%", label: "session integrity check" },
-                { stat: "EDU", label: "first infrastructure" },
-              ].map((s) => (
-                <div key={s.label} className="space-y-1">
-                  <div className="text-2xl md:text-3xl font-bold tracking-tight">{s.stat}</div>
-                  <div className="text-xs uppercase tracking-wider text-muted-foreground">{s.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ─────────────────────────────────────────────────────────────── */}
-        {/* PRODUCER MODE — THE WOW MOMENT                                  */}
-        {/* ─────────────────────────────────────────────────────────────── */}
-        <section
-          id="producer-mode"
-          className="relative overflow-hidden bg-gradient-to-b from-background to-zinc-950"
-        >
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(220,38,38,0.08),transparent_70%)]" />
-          <div className="relative container py-24 md:py-32">
-            <div className="mx-auto max-w-3xl text-center space-y-5 mb-16">
-              <SectionEyebrow>The centrepiece</SectionEyebrow>
-              <h2 className="text-4xl md:text-6xl font-bold tracking-tight">
-                Producer Mode.
-                <br />
-                <span className="text-muted-foreground">One screen. Total confidence.</span>
-              </h2>
-              <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-                Built so a Year 8 student can run the same studio session a
-                professional producer would. No menus. No file management. No
-                anxiety — just a green light to record and a safe way to stop.
-              </p>
-            </div>
-
-            <ProducerModeShowcase />
-
-            <div className="mx-auto mt-12 grid max-w-5xl gap-4 md:grid-cols-3 text-sm">
-              {[
-                {
-                  t: "Idiot-proof workflow",
-                  d: "Pre-flight check gates the record button. Students never start a session that isn't actually recording.",
-                },
-                {
-                  t: "Safe to stop",
-                  d: "Full-screen STOP confirmation prevents accidental cuts mid-take. The take is locked the moment you stop.",
-                },
-                {
-                  t: "Auto-offload built in",
-                  d: "The moment recording ends, files are pulled from the local hardware into a clean project. Nothing dragged.",
-                },
-              ].map((b) => (
-                <div
-                  key={b.t}
-                  className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 backdrop-blur"
-                >
-                  <div className="text-sm font-semibold text-zinc-100">{b.t}</div>
-                  <div className="mt-1.5 text-sm text-zinc-400 leading-relaxed">{b.d}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ─────────────────────────────────────────────────────────────── */}
-        {/* HOW IT WORKS                                                    */}
-        {/* ─────────────────────────────────────────────────────────────── */}
-        <section id="how-it-works" className="border-b border-border/60">
-          <div className="container py-24 md:py-28">
-            <div className="mx-auto max-w-3xl text-center space-y-4 mb-16">
-              <SectionEyebrow>Record to ready</SectionEyebrow>
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-                Four clean steps. Zero chaos.
-              </h2>
-              <p className="text-base text-muted-foreground leading-relaxed">
-                Offloadr isn't recording in the cloud. It is the workflow
-                infrastructure around your local studio — so the recording
-                actually arrives, organised, every time.
-              </p>
-            </div>
-
-            <div className="mx-auto grid max-w-6xl gap-5 md:grid-cols-2 lg:grid-cols-4">
-              {[
-                { n: "01", t: "Record locally", d: "Use the gear teams already trust — RODECaster, cameras, switchers, Mac Mini, Podcart." },
-                { n: "02", t: "Stop with confidence", d: "Producer Mode confirms audio, video, storage and Podcart are all live before you hit stop." },
-                { n: "03", t: "Auto-offload", d: "Files are pulled from local sources into a structured project. No drag and drop, no chasing SD cards." },
-                { n: "04", t: "Editor handoff", d: "One secure share link. Tagged files, missing-file checklist, producer notes attached." },
-              ].map((s, i) => (
-                <div key={s.n} className="relative">
-                  <div className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm hover:shadow-md transition-shadow h-full">
-                    <div className="flex items-center justify-between">
-                      <div className="font-mono text-xs font-semibold text-blue-600">{s.n}</div>
-                      <div className="h-8 w-8 rounded-lg bg-blue-500/10 ring-1 ring-blue-500/20 flex items-center justify-center text-blue-600 text-xs font-bold">
-                        {i + 1}
-                      </div>
-                    </div>
-                    <div className="mt-4 text-lg font-semibold">{s.t}</div>
-                    <div className="mt-2 text-sm text-muted-foreground leading-relaxed">{s.d}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ─────────────────────────────────────────────────────────────── */}
-        {/* ECOSYSTEM — Podcart + Schools                                   */}
-        {/* ─────────────────────────────────────────────────────────────── */}
-        <section
-          id="schools"
-          className="relative overflow-hidden border-b border-border/60 bg-muted/20"
-        >
-          <div className="pointer-events-none absolute -left-40 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-blue-500/10 blur-3xl" />
-          <div className="relative container py-24 md:py-28">
-            <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr] items-start">
-              <div className="space-y-6">
-                <SectionEyebrow>
-                  <GraduationCap className="h-3 w-3" /> Education-first ecosystem
-                </SectionEyebrow>
-                <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
-                  Hardware, software and workflow —
-                  <span className="text-blue-600"> built for the next generation of student voice.</span>
-                </h2>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  Offloadr is the workflow layer behind Podcart, the school
-                  studio cart used for Oracy, podcasting, debate, news and
-                  student broadcasting. Hardware and software designed together
-                  — so a teacher with no production background can still run a
-                  real studio.
-                </p>
-
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {[
-                    { t: "Podcart hardware", d: "RODECaster, cameras, Mac Mini, mixer — all integrated." },
-                    { t: "Producer Mode", d: "Student-safe control surface for live productions." },
-                    { t: "Oracy & debate", d: "Capture-ready workflows for speaking and listening." },
-                    { t: "Term archives", d: "Cloud storage organised by class, project and year." },
-                  ].map((c) => (
-                    <div
-                      key={c.t}
-                      className="rounded-xl border border-border/60 bg-background p-4 shadow-sm"
-                    >
-                      <div className="text-sm font-semibold">{c.t}</div>
-                      <div className="mt-1 text-xs text-muted-foreground leading-relaxed">{c.d}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* ecosystem visual */}
-              <div className="relative">
-                <div className="absolute -inset-6 rounded-3xl bg-gradient-to-br from-blue-500/10 via-transparent to-indigo-500/10 blur-2xl" />
-                <div className="relative rounded-2xl border border-border/60 bg-card p-6 shadow-xl">
-                  <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-4">
-                    Studio A · live signal map
-                  </div>
-                  <div className="space-y-2.5">
-                    {[
-                      { src: "RODECaster Pro II", to: "4-track audio", ok: true },
-                      { src: "Camera A · B · C", to: "Multi-cam video", ok: true },
-                      { src: "Podcart Mac Mini", to: "Local capture", ok: true },
-                      { src: "Producer Mode tablet", to: "Session control", ok: true },
-                      { src: "Offloadr cloud", to: "Auto-offload + handoff", ok: true },
-                    ].map((row) => (
-                      <div
-                        key={row.src}
-                        className="flex items-center gap-3 rounded-lg border border-border/60 bg-background/60 px-3 py-2.5 text-xs"
-                      >
-                        <div className="flex-1 font-medium">{row.src}</div>
-                        <ArrowRight className="h-3 w-3 text-muted-foreground" />
-                        <div className="flex-1 text-right text-muted-foreground">{row.to}</div>
-                        <Dot tone="ok" />
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-5 grid grid-cols-4 gap-2 text-center text-[10px] uppercase tracking-wider text-muted-foreground">
-                    {["Capture", "Confirm", "Offload", "Hand off"].map((s, i) => (
-                      <div key={s} className="space-y-1">
-                        <div className={`h-1 rounded-full ${i < 4 ? "bg-blue-500" : "bg-muted"}`} />
-                        <div>{s}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-              {[
-                "Student voice", "Oracy lessons", "School podcasts", "Debate finals",
-                "School news", "Remote guests", "Oral assessments", "Teacher workload ↓",
-              ].map((u) => (
-                <div
-                  key={u}
-                  className="rounded-lg border border-border/60 bg-background px-4 py-3 font-medium text-center"
-                >
-                  {u}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ─────────────────────────────────────────────────────────────── */}
-        {/* EDITOR HANDOFF                                                  */}
-        {/* ─────────────────────────────────────────────────────────────── */}
+        {/* ============================================================ */}
+        {/* 1. HERO                                                       */}
+        {/* ============================================================ */}
         <section className="border-b border-border/60">
-          <div className="container py-24 md:py-28">
-            <div className="grid items-center gap-16 lg:grid-cols-2">
-              <div>
-                <HandoffMockup />
-              </div>
-              <div className="space-y-5">
-                <SectionEyebrow>Editor handoff</SectionEyebrow>
-                <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
-                  Project ready for editor.
+          <div className="container py-16 md:py-24">
+            <div className="grid lg:grid-cols-[1fr_1.1fr] gap-12 lg:gap-16 items-center">
+              <div className="space-y-7">
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.02]">
+                  Stop the recording.
                   <br />
-                  <span className="text-muted-foreground">Every. single. time.</span>
-                </h2>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  When a session completes, Offloadr produces a clean,
-                  predictable project. Folders are organised. Files are tagged.
-                  Anything missing is flagged before the editor ever opens it.
+                  <span className="text-muted-foreground">Walk away.</span>
+                </h1>
+                <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl">
+                  Offloadr handles the upload, the organisation, and the handoff — so by
+                  the time the editor opens the project, everything is already there.
                 </p>
-                <ul className="space-y-3 text-sm">
-                  {[
-                    "Predictable folder structure across every project",
-                    "Tagged audio, video and notes — ready for FCP, Resolve or Premiere",
-                    "Missing-file checklist surfaced before share",
-                    "Single secure share link, time-bound, owner-revocable",
-                  ].map((b) => (
-                    <li key={b} className="flex items-start gap-3">
-                      <CheckCircle2 className="h-4 w-4 mt-0.5 text-emerald-500 flex-shrink-0" />
-                      <span>{b}</span>
-                    </li>
-                  ))}
-                </ul>
+                <div className="flex flex-wrap items-center gap-4 pt-2">
+                  <Link href="/register">
+                    <Button size="lg" className="h-12 px-7 text-base font-semibold">
+                      Start a project <ArrowRight className="ml-1.5 h-4 w-4" />
+                    </Button>
+                  </Link>
+                  <a
+                    href="#editor"
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5"
+                  >
+                    See what the editor sees <ArrowRight className="h-3.5 w-3.5" />
+                  </a>
+                </div>
+                <div className="text-xs text-muted-foreground pt-1">
+                  Offloadr does not record. Offloadr takes over when the recording ends.
+                </div>
+              </div>
+
+              <div>
+                <HeroAnimation />
               </div>
             </div>
           </div>
         </section>
 
-        {/* ─────────────────────────────────────────────────────────────── */}
-        {/* PRICING                                                         */}
-        {/* ─────────────────────────────────────────────────────────────── */}
-        <section id="pricing" className="border-b border-border/60 bg-muted/20">
-          <div className="container py-24 md:py-28">
-            <div className="mx-auto max-w-3xl text-center space-y-4 mb-14">
-              <SectionEyebrow>Pricing</SectionEyebrow>
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-                Simple plans for every studio.
+        {/* ============================================================ */}
+        {/* 2. THE CHAOS                                                  */}
+        {/* ============================================================ */}
+        <section id="chaos" className="border-b border-border/60 bg-muted/20">
+          <div className="container py-20 md:py-24">
+            <div className="max-w-3xl space-y-3 mb-12">
+              <SectionEyebrow>Before Offloadr</SectionEyebrow>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
+                The session ends. The chaos starts.
               </h2>
-              <p className="text-base text-muted-foreground">
-                Start small. Scale into Podcart and Education when you're ready.
+            </div>
+            <div className="grid md:grid-cols-3 gap-8 md:gap-10 max-w-5xl">
+              {[
+                "You finish the session and now there's 240 GB on three SD cards, two laptops, and someone's phone.",
+                "The editor messages you Tuesday: \u201cWhere's the lav from take 4?\u201d You don't know.",
+                "Half the project lives in DMs, half in a Drive folder, half is still on a card in the kit bag.",
+              ].map((line, i) => (
+                <div key={i} className="text-base leading-relaxed text-foreground/90">
+                  {line}
+                </div>
+              ))}
+            </div>
+            <div className="mt-12 pt-8 border-t border-border/60 max-w-3xl">
+              <p className="text-lg md:text-xl font-medium">
+                Offloadr is the layer between the session ending and the project being editable.
               </p>
             </div>
+          </div>
+        </section>
 
-            <div className="mx-auto grid max-w-5xl gap-5 md:grid-cols-3">
-              {[
-                {
-                  name: "Creator",
-                  tag: "Solo podcasters and creators",
-                  bullets: ["1 active project at a time", "Local upload from one source", "Basic editor share link"],
-                  cta: "Start free", href: "/register", primary: false,
-                },
-                {
-                  name: "Studio",
-                  tag: "Production teams and agencies",
-                  bullets: ["Unlimited projects", "Multi-source recording sessions", "Producer Mode for every session", "Editor handoff with checklist"],
-                  cta: "Start a Project", href: "/register", primary: true,
-                },
-                {
-                  name: "Education",
-                  tag: "Schools running Podcart",
-                  bullets: ["Producer Mode for students", "School-grade workflows", "Cloud storage for term archives", "Podcart hardware + support"],
-                  cta: "Talk to us", href: "mailto:hello@offloadr.app", primary: false,
-                },
-              ].map((p) => (
-                <div
-                  key={p.name}
-                  className={`relative rounded-2xl border bg-background p-7 flex flex-col ${
-                    p.primary
-                      ? "border-blue-500/40 shadow-xl shadow-blue-500/10 ring-1 ring-blue-500/20"
-                      : "border-border/60"
-                  }`}
-                >
-                  {p.primary && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-blue-600 px-3 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white">
-                      Most popular
+        {/* ============================================================ */}
+        {/* 3. THE OFFLOADR ARC — the aha moment                          */}
+        {/* ============================================================ */}
+        <section id="arc" className="border-b border-border/60">
+          <div className="container py-20 md:py-24">
+            <div className="max-w-3xl space-y-3 mb-14">
+              <SectionEyebrow>The arc</SectionEyebrow>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
+                Four steps. One link at the end.
+              </h2>
+            </div>
+
+            <div className="relative">
+              {/* connecting line */}
+              <div className="hidden md:block absolute left-0 right-0 top-7 h-px bg-border/80" />
+              <div className="grid md:grid-cols-4 gap-8 md:gap-6 relative">
+                {[
+                  {
+                    icon: Square,
+                    tone: "rec" as const,
+                    label: "You stop recording",
+                    body: "On the same gear you already use. Offloadr is not in the recording path.",
+                  },
+                  {
+                    icon: CloudUpload,
+                    tone: "uploading" as const,
+                    label: "Files upload",
+                    body: "Drop the files in once. They land in the right folder, every time.",
+                  },
+                  {
+                    icon: Folders,
+                    tone: "uploading" as const,
+                    label: "Organise + verify",
+                    body: "Producer Mode tags takes. Missing-file checklist runs before you share.",
+                  },
+                  {
+                    icon: Inbox,
+                    tone: "ready" as const,
+                    label: "Editor opens project",
+                    body: "One link. Whole project, organised, with producer notes attached.",
+                  },
+                ].map((n) => (
+                  <div key={n.label} className="space-y-3">
+                    <div
+                      className={`relative h-14 w-14 rounded-full bg-card border-2 flex items-center justify-center ${
+                        n.tone === "rec"
+                          ? "border-red-500/40 text-red-600"
+                          : n.tone === "uploading"
+                            ? "border-amber-500/40 text-amber-700"
+                            : "border-emerald-500/40 text-emerald-700"
+                      }`}
+                    >
+                      <n.icon className="h-5 w-5" />
                     </div>
-                  )}
-                  <div className="text-sm font-semibold text-blue-600">{p.name}</div>
-                  <div className="mt-1 text-sm text-muted-foreground">{p.tag}</div>
-                  <ul className="mt-5 space-y-2.5 text-sm flex-1">
-                    {p.bullets.map((b) => (
-                      <li key={b} className="flex items-start gap-2.5">
-                        <CheckCircle2 className="h-4 w-4 mt-0.5 text-emerald-500 flex-shrink-0" />
-                        <span>{b}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mt-6">
-                    {p.href.startsWith("mailto:") ? (
-                      <a href={p.href} className="block">
-                        <Button variant={p.primary ? "default" : "outline"} className="w-full">{p.cta}</Button>
-                      </a>
-                    ) : (
-                      <Link href={p.href} className="block">
-                        <Button variant={p.primary ? "default" : "outline"} className="w-full">{p.cta}</Button>
-                      </Link>
-                    )}
+                    <div>
+                      <div className="text-sm font-semibold">{n.label}</div>
+                      <div className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                        {n.body}
+                      </div>
+                    </div>
                   </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* 4. STOP SAFELY                                                */}
+        {/* ============================================================ */}
+        <section id="stop" className="border-b border-border/60 bg-muted/20">
+          <div className="container py-20 md:py-24">
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+              <div className="space-y-5 max-w-lg">
+                <SectionEyebrow>Land in the right folder</SectionEyebrow>
+                <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
+                  Files land in their folders. Not your inbox.
+                </h2>
+                <p className="text-base text-muted-foreground leading-relaxed">
+                  Every file goes into the right place — audio in 01_AUDIO, video in
+                  02_VIDEO, project files where the editor expects them. Each upload is
+                  verified end to end before it counts as done, so you know what landed
+                  and what didn't.
+                </p>
+              </div>
+              <StopSafelyVisual />
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* 5. STAY ORGANISED — Producer Mode + missing files             */}
+        {/* ============================================================ */}
+        <section id="organise" className="border-b border-border/60">
+          <div className="container py-20 md:py-24">
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+              <div className="lg:order-2">
+                <ProducerModeMock />
+              </div>
+              <div className="space-y-6 max-w-lg lg:order-1">
+                <div className="space-y-5">
+                  <SectionEyebrow>Stay organised</SectionEyebrow>
+                  <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
+                    Tag the take while it's still fresh.
+                  </h2>
+                  <p className="text-base text-muted-foreground leading-relaxed">
+                    While the engineer breaks down the kit, the producer marks takes,
+                    leaves notes, and sees instantly if anything expected from the
+                    session isn't there yet. No more "I'll label them later" — later is now.
+                  </p>
+                </div>
+                <MissingFileCallout />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* 6. EDITOR OPENS A CLEAN PROJECT — REAL SCREENSHOT             */}
+        {/* ============================================================ */}
+        <section id="editor" className="border-b border-border/60 bg-muted/20">
+          <div className="container py-20 md:py-24">
+            <div className="max-w-3xl space-y-4 mb-12">
+              <SectionEyebrow>Editor handoff</SectionEyebrow>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
+                What the editor actually receives.
+              </h2>
+              <p className="text-base text-muted-foreground leading-relaxed max-w-2xl">
+                One link. The editor sees every file in the right folder, every take labeled,
+                every missing item flagged before they ask. They can start cutting in the
+                time it usually takes to figure out what's where.
+              </p>
+            </div>
+            <div className="rounded-xl border border-border/70 bg-card overflow-hidden shadow-[0_30px_80px_-30px_rgba(0,0,0,0.25)]">
+              <img
+                src={`${import.meta.env.BASE_URL}marketing/editor-handoff.jpg`}
+                alt="Offloadr editor handoff page showing organised project files, missing-file flag, and download-all button"
+                className="w-full h-auto block"
+                loading="lazy"
+              />
+            </div>
+            <div className="mt-4 text-xs text-muted-foreground text-center">
+              Real Offloadr editor handoff page — Founder's Brief, Episode 14.
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================================ */}
+        {/* 7. WHAT'S IN EVERY PROJECT                                    */}
+        {/* ============================================================ */}
+        <section id="everything" className="border-b border-border/60">
+          <div className="container py-20 md:py-24">
+            <div className="max-w-3xl space-y-3 mb-12">
+              <SectionEyebrow>What's in every project</SectionEyebrow>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tight">
+                The table-stakes are already there.
+              </h2>
+            </div>
+            <div className="grid md:grid-cols-2 gap-x-12 gap-y-3 max-w-4xl text-base">
+              {[
+                "Producer notes attached to takes",
+                "Missing-file checklist before you share",
+                "Folder structure your editor will recognise",
+                "Cleaned filenames so the editor knows what's what",
+                "One share link per project, revocable",
+                "Whole-project ZIP download for the editor",
+                "Per-project access — no shared Drive folders",
+                "No login required for the editor on the share page",
+              ].map((line) => (
+                <div key={line} className="flex items-start gap-3 py-2 border-b border-border/40">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-1 flex-shrink-0" />
+                  <span>{line}</span>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ─────────────────────────────────────────────────────────────── */}
-        {/* FINAL CTA                                                       */}
-        {/* ─────────────────────────────────────────────────────────────── */}
-        <section className="relative overflow-hidden">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.10),transparent_60%)]" />
-          <div className="relative container py-24 md:py-32">
-            <div className="mx-auto max-w-3xl text-center space-y-7">
-              <SectionEyebrow>The future of student media</SectionEyebrow>
-              <h2 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.05]">
-                From recording chaos
+        {/* ============================================================ */}
+        {/* 8. CTA                                                        */}
+        {/* ============================================================ */}
+        <section id="cta">
+          <div className="container py-24 md:py-32">
+            <div className="max-w-3xl mx-auto text-center space-y-8">
+              <h2 className="text-3xl md:text-5xl font-semibold tracking-tight leading-tight">
+                Your next session ends in chaos by default.
                 <br />
-                <span className="bg-gradient-to-r from-blue-600 to-indigo-500 bg-clip-text text-transparent">
-                  to ready-to-edit projects.
-                </span>
+                <span className="text-muted-foreground">Change the default.</span>
               </h2>
-              <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-                Offloadr is the operating system schools, studios and Podcart
-                teams use to run real productions with confidence. Start a
-                project in minutes — or book a demo and see Producer Mode live.
-              </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-                <a href="mailto:hello@offloadr.app?subject=Offloadr%20demo%20request">
-                  <Button size="lg" className="h-12 px-8 text-base font-semibold shadow-lg shadow-blue-600/20">
-                    Book a Demo <ArrowRight className="ml-1.5 h-4 w-4" />
-                  </Button>
-                </a>
+              <div>
                 <Link href="/register">
-                  <Button size="lg" variant="outline" className="h-12 px-7 text-base">
-                    Start a Project
+                  <Button size="lg" className="h-12 px-8 text-base font-semibold">
+                    Start a project <ArrowRight className="ml-1.5 h-4 w-4" />
                   </Button>
                 </Link>
+              </div>
+              <div className="text-xs text-muted-foreground">
+                No credit card to set up. One project free while you try it.
               </div>
             </div>
           </div>
