@@ -3,7 +3,7 @@
   "framework": null,
   "installCommand": "pnpm install --no-frozen-lockfile",
   "buildCommand": "pnpm --filter @workspace/offloadr-app run build",
-  "outputDirectory": "artifacts/offloadr-app/dist/public",
+  "outputDirectory": "artifacts/offloadr-app/dist",
   "rewrites": [
     {
       "source": "/((?!assets/|favicon\\.svg|marketing/).*)",
