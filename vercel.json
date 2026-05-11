@@ -2,8 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "installCommand": "pnpm install",
-  "buildCommand": "pnpm --filter @workspace/offloadr-app run build",
-  "outputDirectory": "artifacts/offloadr-app/dist",
+  "buildCommand": "pnpm --filter @workspace/offloadr-app run build && rm -rf dist && cp -r artifacts/offloadr-app/dist dist",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/((?!assets/|favicon\\.svg|marketing/).*)",
