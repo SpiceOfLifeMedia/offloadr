@@ -158,7 +158,7 @@ function HeroVisual() {
 
       {/* Centre: main Episode 4 card (largest, slight tilt the other way) */}
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[360px] md:w-[400px] rounded-2xl border border-white/[0.10] bg-zinc-950/90 backdrop-blur-sm p-6 brand-card shadow-[0_40px_120px_-40px_rgba(0,0,0,0.95)] z-10"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(280px,calc(100vw-3rem))] sm:w-[340px] md:w-[400px] rounded-2xl border border-white/[0.10] bg-zinc-950/90 backdrop-blur-sm p-6 brand-card shadow-[0_40px_120px_-40px_rgba(0,0,0,0.95)] z-10"
         style={{ transform: "translate(-50%, -50%) rotate(-1deg)" }}
       >
         <div className="flex items-center justify-between mb-5">
