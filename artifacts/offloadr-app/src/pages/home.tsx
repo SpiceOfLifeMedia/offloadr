@@ -1,5 +1,5 @@
 import { PublicLayout } from "@/components/layout/public-layout";
-import { openDemoModal } from "@/components/marketing/demo-modal";
+import { openDemoModal } from "@/components/marketing/demo-modal-trigger";
 import {
   ArrowRight,
   Upload,

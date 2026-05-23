@@ -51,6 +51,28 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist"),
     emptyOutDir: true,
+    sourcemap: false,
+    target: "es2020",
+    cssCodeSplit: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return undefined;
+          if (id.includes("react-dom")) return "react-dom";
+          if (
+            id.includes("/react/") ||
+            id.includes("/scheduler/") ||
+            id.includes("/react-is/")
+          )
+            return "react";
+          if (id.includes("@tanstack")) return "tanstack";
+          if (id.includes("@radix-ui")) return "radix";
+          if (id.includes("lucide-react")) return "icons";
+          if (id.includes("wouter")) return "router";
+          return "vendor";
+        },
+      },
+    },
   },
   server: {
     port: devPort,

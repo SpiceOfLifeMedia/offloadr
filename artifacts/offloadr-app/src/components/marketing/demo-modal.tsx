@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { X, Check, Loader2, AlertCircle, Mail } from "lucide-react";
+import { OPEN_DEMO_EVENT } from "./demo-modal-trigger";
 
-const OPEN_EVENT = "offloadr:open-demo";
+const OPEN_EVENT = OPEN_DEMO_EVENT;
 const FALLBACK_EMAIL = "demo@useoffloadr.com";
 
 function buildMailtoFallback(form: FormState): string {
@@ -25,11 +26,6 @@ function buildMailtoFallback(form: FormState): string {
     .filter(Boolean)
     .join("\n");
   return `mailto:${FALLBACK_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-}
-
-export function openDemoModal() {
-  if (typeof window === "undefined") return;
-  window.dispatchEvent(new Event(OPEN_EVENT));
 }
 
 const ROLE_OPTIONS = [

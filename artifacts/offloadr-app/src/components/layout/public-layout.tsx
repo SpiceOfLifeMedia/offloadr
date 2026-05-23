@@ -1,5 +1,26 @@
 import { Link, useLocation } from "wouter";
-import { DemoModal, openDemoModal } from "@/components/marketing/demo-modal";
+import { lazy, Suspense, useEffect, useState } from "react";
+import {
+  OPEN_DEMO_EVENT,
+  openDemoModal,
+} from "@/components/marketing/demo-modal-trigger";
+
+const DemoModal = lazy(() =>
+  import("@/components/marketing/demo-modal").then((m) => ({
+    default: m.DemoModal,
+  })),
+);
+
+function useDemoModalMount() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    if (mounted) return;
+    const handler = () => setMounted(true);
+    window.addEventListener(OPEN_DEMO_EVENT, handler);
+    return () => window.removeEventListener(OPEN_DEMO_EVENT, handler);
+  }, [mounted]);
+  return mounted;
+}
 
 const NAV = [
   { label: "How It Works", anchor: "#how" },
@@ -12,6 +33,7 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
   const [pathname] = useLocation();
   const onHome = pathname === "/" || pathname === "";
   const navHref = (anchor: string) => (onHome ? anchor : `/${anchor}`);
+  const demoMounted = useDemoModalMount();
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground relative overflow-x-hidden">
@@ -112,7 +134,11 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </footer>
-      <DemoModal />
+      {demoMounted && (
+        <Suspense fallback={null}>
+          <DemoModal />
+        </Suspense>
+      )}
     </div>
   );
 }
