@@ -93,7 +93,7 @@ function SecondaryCTA({ children, href = LOGIN_HREF }: { children: React.ReactNo
 
 function HeroVisual() {
   return (
-    <div className="relative mx-auto w-full max-w-xl h-[480px] md:h-[520px]">
+    <div className="relative mx-auto w-full max-w-md h-[440px] md:h-[460px]">
       {/* Static glow halo — no animation */}
       <div
         aria-hidden
@@ -158,7 +158,7 @@ function HeroVisual() {
 
       {/* Centre: main Episode 4 card (largest, slight tilt the other way) */}
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(280px,calc(100vw-3rem))] sm:w-[340px] md:w-[400px] rounded-2xl border border-white/[0.10] bg-zinc-950/90 backdrop-blur-sm p-6 brand-card shadow-[0_40px_120px_-40px_rgba(0,0,0,0.95)] z-10"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(280px,calc(100vw-3rem))] sm:w-[320px] md:w-[340px] rounded-2xl border border-white/[0.10] bg-zinc-950/90 backdrop-blur-sm p-5 brand-card shadow-[0_40px_120px_-40px_rgba(0,0,0,0.95)] z-10"
         style={{ transform: "translate(-50%, -50%) rotate(-1deg)" }}
       >
         <div className="flex items-center justify-between mb-5">
@@ -239,9 +239,9 @@ function Hero() {
         />
       </div>
 
-      <div className="container pt-20 md:pt-32 pb-24 md:pb-32 relative z-10">
-        <div className="grid lg:grid-cols-12 gap-16 items-center">
-          <div className="lg:col-span-7 space-y-8">
+      <div className="container pt-16 md:pt-24 pb-16 md:pb-24 relative z-10">
+        <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-10 lg:gap-14 items-center">
+          <div className="space-y-7">
             <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-300">
               <span
                 className="h-1.5 w-1.5 rounded-full brand-pulse"
@@ -305,7 +305,7 @@ function Hero() {
             </div>
           </div>
 
-          <div className="lg:col-span-5">
+          <div className="min-w-0">
             <HeroVisual />
           </div>
         </div>
@@ -355,14 +355,14 @@ function HowItWorks() {
       id="how"
       className="relative border-y border-white/[0.06] bg-zinc-950/40"
     >
-      <div className="container py-24 md:py-32 relative z-10">
+      <div className="container py-16 md:py-24 relative z-10">
         <SectionHeading
           eyebrow="How it works"
           title="From a phone in the back row to a teacher-approved project."
           subtitle="Four quiet steps. No drives, no DIY pipelines, no late nights chasing files."
         />
 
-        <div className="mt-14 relative">
+        <div className="mt-10 relative">
           {/* Gradient connector line behind the cards (desktop only) */}
           <div
             aria-hidden
@@ -396,63 +396,6 @@ function HowItWorks() {
               </div>
             ))}
           </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/*  For Schools — three reasons, brand-coloured                                */
-/* -------------------------------------------------------------------------- */
-
-const REASONS = [
-  {
-    icon: ShieldCheck,
-    tint: "brand-blue",
-    title: "Safe-for-schools by default",
-    body:
-      "No public links. No student data exposed. Teachers control access at every step, and every upload is tied to a real student in a real class — never an anonymous file on a drive.",
-  },
-  {
-    icon: Sparkles,
-    tint: "brand-indigo",
-    title: "AI that helps teachers, not replaces them",
-    body:
-      "AI prepares the draft — highlights, captions, exports. A teacher always reviews before anything reaches the class, the parents, or the school's channels.",
-  },
-  {
-    icon: Smartphone,
-    tint: "brand-violet",
-    title: "Works on the devices students already have",
-    body:
-      "Phone, school laptop, Chromebook, classroom camera. One scan, one tap, one upload. No app installs, no logins to remember, no IT tickets.",
-  },
-] as const;
-
-function ForSchools() {
-  return (
-    <section id="for-schools" className="relative border-b border-white/[0.06]">
-      <div className="container py-24 md:py-32 relative z-10">
-        <SectionHeading
-          eyebrow="For schools"
-          title="Built for the way real classrooms actually work."
-        />
-        <div className="mt-14 grid md:grid-cols-3 gap-4">
-          {REASONS.map((r) => (
-            <div
-              key={r.title}
-              className="brand-card rounded-2xl border border-white/[0.06] bg-zinc-950/80 p-8"
-            >
-              <div className={`brand-icon ${r.tint} mb-6`}>
-                <r.icon className="h-5 w-5" strokeWidth={2} />
-              </div>
-              <div className="text-lg font-semibold text-zinc-50 tracking-tight mb-2">
-                {r.title}
-              </div>
-              <p className="text-sm text-zinc-300 leading-relaxed">{r.body}</p>
-            </div>
-          ))}
         </div>
       </div>
     </section>
@@ -505,14 +448,14 @@ function WorkflowSection() {
       id="workflow"
       className="relative border-b border-white/[0.06] bg-zinc-950/40"
     >
-      <div className="container py-24 md:py-32 relative z-10">
+      <div className="container py-16 md:py-24 relative z-10">
         <SectionHeading
           eyebrow="Classroom workflow"
           title="One simple flow. Three quiet hand-offs."
           subtitle="Students record. Offloadr organises and prepares. Teachers review and approve. That's the whole loop."
         />
 
-        <div className="mt-14 grid md:grid-cols-3 gap-4">
+        <div className="mt-10 grid md:grid-cols-3 gap-4">
           {lanes.map((lane, idx) => (
             <div
               key={lane.label}
@@ -544,94 +487,72 @@ function WorkflowSection() {
             </div>
           ))}
         </div>
+
+        {/* Value-prop strip — folds in the old For Schools section in one line. */}
+        <ul className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-[13px] text-zinc-400">
+          <li className="inline-flex items-center gap-2">
+            <ShieldCheck className="h-3.5 w-3.5" style={{ color: "rgb(0 128 255)" }} />
+            <span><span className="text-zinc-100 font-semibold">Safe-for-schools</span> by default</span>
+          </li>
+          <li className="hidden sm:block h-3 w-px bg-white/[0.10]" />
+          <li className="inline-flex items-center gap-2">
+            <Sparkles className="h-3.5 w-3.5" style={{ color: "rgb(167 139 250)" }} />
+            <span><span className="text-zinc-100 font-semibold">AI that assists</span>, never replaces</span>
+          </li>
+          <li className="hidden sm:block h-3 w-px bg-white/[0.10]" />
+          <li className="inline-flex items-center gap-2">
+            <Smartphone className="h-3.5 w-3.5" style={{ color: "rgb(196 181 253)" }} />
+            <span>Works on devices students <span className="text-zinc-100 font-semibold">already have</span></span>
+          </li>
+        </ul>
       </div>
     </section>
   );
 }
 
 /* -------------------------------------------------------------------------- */
-/*  AI Editing — single clean four-stage strip, brand-coloured                 */
+/*  AI Editing — split layout: text left, timeline visual card right           */
 /* -------------------------------------------------------------------------- */
 
-const AI_STAGES = [
-  {
-    label: "Student uploads",
-    icon: Upload,
-    tint: "brand-blue",
-    sub: "Phone, laptop, camera",
-  },
-  {
-    label: "AI prepares draft",
-    icon: Sparkles,
-    tint: "brand-indigo",
-    sub: "Highlights · captions · cut",
-  },
-  {
-    label: "Teacher reviews",
-    icon: Eye,
-    tint: "brand-violet",
-    sub: "Approve · request changes",
-  },
-  {
-    label: "Ready to export",
-    icon: CheckCircle2,
-    tint: "brand-emerald",
-    sub: "MP4 · share · archive",
-  },
+// Deterministic waveform bar heights (4–16px). Hard-coded — no Math.random()
+// in render: that re-rolls every paint and jitters on hot reload.
+const WAVEFORM = [
+  5, 8, 11, 14, 9, 6, 4, 7, 10, 13, 15, 12, 8, 5, 7, 11, 14, 16, 12, 9, 6, 4,
+  6, 10, 13, 15, 11, 8, 5, 7, 9, 12, 14, 13, 10, 7, 5, 8, 11, 13, 15, 12, 9, 6,
+  4, 7, 10, 12, 14, 11, 8, 5, 6, 9, 12, 14, 13, 10, 7, 5, 7, 9, 11, 8,
+];
+
+// Timeline clip widths (in flex-grow units) + tint. Five clips of varying
+// duration, brand-tinted.
+const CLIPS = [
+  { grow: 3, color: "rgb(0 128 255 / 0.55)", border: "rgb(0 128 255 / 0.85)" },
+  { grow: 5, color: "rgb(79 70 229 / 0.55)", border: "rgb(79 70 229 / 0.85)" },
+  { grow: 2, color: "rgb(124 58 237 / 0.55)", border: "rgb(124 58 237 / 0.85)" },
+  { grow: 4, color: "rgb(167 139 250 / 0.55)", border: "rgb(167 139 250 / 0.85)" },
+  { grow: 3, color: "rgb(0 128 255 / 0.55)", border: "rgb(0 128 255 / 0.85)" },
 ] as const;
 
 function AIEditingSection() {
   return (
     <section id="ai" className="relative border-b border-white/[0.06]">
-      <div className="container py-24 md:py-32 relative z-10">
-        <SectionHeading
-          eyebrow="AI editing"
-          title="AI does the first cut. Teachers do the calls that matter."
-          subtitle="Offloadr's AI doesn't replace the teacher. It prepares a draft fast enough that the teacher can spend their time on judgement, not on importing files."
-        />
-
-        <div className="mt-14">
-          <div className="brand-card rounded-2xl border border-white/[0.06] bg-zinc-950/80 p-6 md:p-10">
-            <ol className="grid md:grid-cols-4 gap-4 relative">
-              {AI_STAGES.map((s, idx) => (
-                <li key={s.label} className="relative">
-                  <div className="flex items-start gap-4 md:flex-col md:items-start">
-                    <div className={`brand-icon ${s.tint} flex-shrink-0`}>
-                      <s.icon className="h-5 w-5" strokeWidth={2} />
-                    </div>
-                    <div className="md:mt-4">
-                      <div className="text-[11px] font-mono text-zinc-500 mb-1">
-                        Step {idx + 1}
-                      </div>
-                      <div className="text-base font-semibold text-zinc-50 tracking-tight">
-                        {s.label}
-                      </div>
-                      <div className="text-sm text-zinc-300 mt-1">{s.sub}</div>
-                    </div>
-                  </div>
-                  {idx < AI_STAGES.length - 1 && (
-                    <div
-                      aria-hidden
-                      className="hidden md:block absolute top-5 left-[calc(50%+1.75rem)] right-[-1rem] h-px"
-                      style={{
-                        background:
-                          "linear-gradient(90deg, rgb(79 70 229 / 0.4), rgb(124 58 237 / 0.15) 80%, transparent)",
-                      }}
-                    />
-                  )}
-                </li>
-              ))}
-            </ol>
-
-            <div className="mt-10 grid sm:grid-cols-3 gap-3">
+      <div className="container py-16 md:py-24 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+          {/* LEFT: copy + tight bullet list */}
+          <div className="space-y-6 lg:sticky lg:top-28">
+            <SectionHeading
+              eyebrow="AI editing"
+              title="AI does the first cut. Teachers do the calls that matter."
+              subtitle="Offloadr's AI prepares a draft fast enough that the teacher spends their time on judgement, not on importing files."
+            />
+            <ul className="space-y-2.5 pt-2">
               {[
                 "Captions generated from student audio, ready to caption-burn",
                 "Highlight detection picks the moments teachers usually mark",
-                "First-cut MP4 export available in the teacher dashboard",
+                "First-cut MP4 export available in the teacher dashboard the same lesson",
               ].map((t) => (
-                <div
+                <li
                   key={t}
-                  className="flex items-start gap-2.5 rounded-lg bg-zinc-900/40 ring-1 ring-white/[0.04] px-4 py-3 text-sm text-zinc-200"
+                  className="flex items-start gap-3 text-sm text-zinc-200 leading-relaxed"
                 >
                   <Sparkles
                     className="h-4 w-4 mt-0.5 flex-shrink-0"
@@ -639,11 +560,91 @@ function AIEditingSection() {
                     style={{ color: "rgb(167 139 250)" }}
                   />
                   <span>{t}</span>
-                </div>
+                </li>
               ))}
+            </ul>
+          </div>
+
+          {/* RIGHT: timeline visual card — clips + waveform + status */}
+          <div className="brand-card rounded-2xl border border-white/[0.06] bg-zinc-950/80 p-5 md:p-6">
+            {/* Header: project + AI Draft badge */}
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.16em]">
+                  Smart Draft
+                </div>
+                <div className="mt-1 text-sm font-semibold text-zinc-50 tracking-tight">
+                  Year 10 News Segment
+                </div>
+              </div>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 ring-1 ring-violet-400/30 px-2.5 py-1 text-[11px] font-semibold text-violet-200">
+                <Sparkles className="h-3 w-3" />
+                AI Draft
+              </span>
+            </div>
+
+            {/* Timeline ruler */}
+            <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500 px-1 mb-1.5">
+              <span>00:00</span>
+              <span>00:45</span>
+              <span>01:30</span>
+              <span>02:15</span>
+              <span>03:00</span>
+            </div>
+
+            {/* Clip strip */}
+            <div className="flex items-stretch gap-1 h-14 rounded-lg bg-zinc-900/60 ring-1 ring-white/[0.04] p-1">
+              {CLIPS.map((c, i) => (
+                <div
+                  key={i}
+                  className="rounded-md"
+                  style={{
+                    flexGrow: c.grow,
+                    flexBasis: 0,
+                    background: c.color,
+                    boxShadow: `inset 0 0 0 1px ${c.border}`,
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Waveform row */}
+            <div className="mt-3 flex items-center gap-[2px] h-5 px-1">
+              {WAVEFORM.map((h, i) => (
+                <div
+                  key={i}
+                  className="flex-1 rounded-[1px]"
+                  style={{
+                    height: `${h}px`,
+                    background: "rgb(79 70 229 / 0.4)",
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Status row */}
+            <div className="mt-5 flex items-center justify-between rounded-lg bg-zinc-900/60 ring-1 ring-white/[0.04] px-3.5 py-2.5">
+              <div className="flex items-center gap-2.5 text-[12px] text-zinc-200">
+                <svg
+                  className="h-3.5 w-3.5 brand-pulse"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden
+                >
+                  <circle cx="12" cy="12" r="9" stroke="rgb(167 139 250)" strokeWidth="2" strokeLinecap="round" strokeDasharray="40 18" />
+                </svg>
+                <span className="font-semibold">Building draft…</span>
+                <span className="text-zinc-500 hidden sm:inline">
+                  captions · highlights · cut
+                </span>
+              </div>
+              <div className="text-[11px] font-mono text-zinc-400">
+                02:34 / 1080p
+              </div>
             </div>
           </div>
         </div>
+
       </div>
     </section>
   );
@@ -682,7 +683,7 @@ function SecuritySection() {
       id="security"
       className="relative border-b border-white/[0.06] bg-zinc-950/40"
     >
-      <div className="container py-24 md:py-32 relative z-10">
+      <div className="container py-16 md:py-24 relative z-10">
         <div className="grid lg:grid-cols-12 gap-12 items-start">
           <div className="lg:col-span-5 space-y-5 lg:sticky lg:top-28">
             <Eyebrow>Security · Built for Australian schools</Eyebrow>
@@ -747,9 +748,9 @@ function PilotCTA() {
       id="pilot"
       className="relative bg-gradient-to-b from-zinc-950 to-zinc-950/30"
     >
-      <div className="container py-24 md:py-32 relative z-10">
+      <div className="container py-16 md:py-24 relative z-10">
         <div
-          className="brand-card relative mx-auto max-w-4xl rounded-3xl border bg-zinc-950/80 px-8 py-16 md:px-16 md:py-20 text-center overflow-hidden"
+          className="brand-card relative mx-auto max-w-3xl rounded-3xl border bg-zinc-950/80 px-8 py-14 md:px-12 md:py-16 text-center overflow-hidden"
           style={{ borderColor: "rgb(79 70 229 / 0.22)" }}
         >
           {/* Static internal glow */}
@@ -795,7 +796,6 @@ export default function Home() {
     <PublicLayout>
       <Hero />
       <HowItWorks />
-      <ForSchools />
       <WorkflowSection />
       <AIEditingSection />
       <SecuritySection />
