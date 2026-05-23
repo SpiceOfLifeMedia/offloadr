@@ -15,8 +15,11 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
   const navHref = (anchor: string) => (onHome ? anchor : `/${anchor}`);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
-      <header className="border-b border-white/[0.06] bg-zinc-950/80 backdrop-blur-xl supports-[backdrop-filter]:bg-zinc-950/60 sticky top-0 z-50">
+    <div className="min-h-screen flex flex-col bg-background text-foreground relative">
+      {/* Subtle dot grid — fixed behind everything, ~3% opacity. */}
+      <div aria-hidden className="brand-dot-grid" />
+
+      <header className="border-b border-white/[0.06] bg-zinc-950/80 backdrop-blur-md supports-[backdrop-filter]:bg-zinc-950/65 sticky top-0 z-50">
         <div className="container flex h-16 items-center justify-between gap-8">
           <Link href="/" className="flex items-center gap-2.5 group" aria-label="Offloadr">
             <img

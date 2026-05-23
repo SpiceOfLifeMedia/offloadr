@@ -217,3 +217,161 @@
     pointer-events: none;
   }
 }
+
+/* ============================================================================ */
+/*  Offloadr marketing — brand palette + premium utilities                      */
+/*  Restrained set: brand-tinted icons, gradient text (sparingly), card         */
+/*  top-edge accent, section label with gradient flanks, dot grid, subtle      */
+/*  pulse keyframe. No animated orbs, no scroll-reveal, no gradient buttons.    */
+/* ============================================================================ */
+
+:root {
+  --brand-blue: 0 128 255;
+  --brand-indigo: 79 70 229;
+  --brand-violet: 124 58 237;
+  --brand-violet-light: 167 139 250;
+  --brand-emerald: 16 185 129;
+}
+
+@layer utilities {
+  /* Brand-tinted icon containers — replaces the generic dark-green circles. */
+  .brand-icon {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.6875rem;
+    border: 1px solid;
+  }
+  .brand-icon-sm {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.625rem;
+  }
+  .brand-blue {
+    background: rgb(var(--brand-blue) / 0.10);
+    border-color: rgb(var(--brand-blue) / 0.22);
+    color: rgb(var(--brand-blue));
+  }
+  .brand-indigo {
+    background: rgb(var(--brand-indigo) / 0.10);
+    border-color: rgb(var(--brand-indigo) / 0.22);
+    color: rgb(167 139 250);
+  }
+  .brand-violet {
+    background: rgb(var(--brand-violet) / 0.10);
+    border-color: rgb(var(--brand-violet) / 0.22);
+    color: rgb(196 181 253);
+  }
+  .brand-emerald {
+    background: rgb(var(--brand-emerald) / 0.10);
+    border-color: rgb(var(--brand-emerald) / 0.22);
+    color: rgb(110 231 183);
+  }
+
+  /* Brand-tinted chip — used in security trust list */
+  .brand-chip-blue {
+    background: rgb(var(--brand-blue) / 0.08);
+    border-color: rgb(var(--brand-blue) / 0.30);
+    color: rgb(125 191 255);
+  }
+
+  /* Gradient text — used sparingly: hero headline + final CTA only */
+  .brand-gradient-text {
+    background-image: linear-gradient(
+      135deg,
+      rgb(var(--brand-blue)) 0%,
+      rgb(var(--brand-indigo)) 40%,
+      rgb(var(--brand-violet)) 80%,
+      rgb(var(--brand-violet-light)) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Card top-edge gradient accent — static, 1px, tied to brand. */
+  .brand-card {
+    position: relative;
+    transition:
+      transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .brand-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 1px auto 1px;
+    height: 1px;
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgb(var(--brand-indigo) / 0.45) 50%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+  .brand-card:hover {
+    transform: translateY(-3px);
+    border-color: rgb(var(--brand-indigo) / 0.22);
+    box-shadow: 0 12px 40px -16px rgb(var(--brand-indigo) / 0.20);
+  }
+
+  /* Section label — small violet-light text flanked by gradient lines. */
+  .brand-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgb(var(--brand-violet-light));
+  }
+  .brand-eyebrow::before,
+  .brand-eyebrow::after {
+    content: "";
+    width: 1.25rem;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      rgb(var(--brand-blue) / 0.6),
+      rgb(var(--brand-violet) / 0.6)
+    );
+  }
+  .brand-eyebrow::after {
+    background: linear-gradient(
+      90deg,
+      rgb(var(--brand-violet) / 0.6),
+      rgb(var(--brand-blue) / 0.6)
+    );
+  }
+
+  /* Dot grid — fixed, 3% opacity, behind everything. */
+  .brand-dot-grid {
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(
+      rgb(255 255 255 / 0.035) 1px,
+      transparent 1px
+    );
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Subtle pulse — reserved for ONE element (hero progress bar). */
+  @keyframes brand-pulse {
+    0%, 100% { opacity: 0.85; }
+    50% { opacity: 1; }
+  }
+  .brand-pulse {
+    animation: brand-pulse 2.4s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .brand-pulse { animation: none; }
+  }
+}
