@@ -1,7 +1,31 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { X, Check, Loader2, AlertCircle } from "lucide-react";
+import { X, Check, Loader2, AlertCircle, Mail } from "lucide-react";
 
 const OPEN_EVENT = "offloadr:open-demo";
+const FALLBACK_EMAIL = "demo@useoffloadr.com";
+
+function buildMailtoFallback(form: FormState): string {
+  const subject = `Offloadr school demo request — ${form.school || "(school)"}`;
+  const body = [
+    `Hi Offloadr team,`,
+    ``,
+    `Name:                  ${form.fullName}`,
+    `School / organisation: ${form.school}`,
+    `Role:                  ${form.role}`,
+    `State:                 ${form.state}`,
+    `Student count:         ${form.studentCount}`,
+    `Email:                 ${form.email}`,
+    form.phone ? `Phone:                 ${form.phone}` : "",
+    ``,
+    `Current media workflow:`,
+    form.workflow,
+    ``,
+    `Thanks,`,
+  ]
+    .filter(Boolean)
+    .join("\n");
+  return `mailto:${FALLBACK_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
 
 export function openDemoModal() {
   if (typeof window === "undefined") return;
@@ -36,7 +60,7 @@ const STATE_OPTIONS = [
   "International / Outside AU",
 ];
 
-type Status = "idle" | "submitting" | "success" | "error";
+type Status = "idle" | "submitting" | "success" | "error" | "unavailable";
 
 type FormState = {
   fullName: string;
@@ -165,6 +189,12 @@ export function DemoModal() {
         body: JSON.stringify(form),
       });
       if (!res.ok) {
+        // 5xx / 503 — function unavailable. Offer mailto fallback so the
+        // user is never dead-ended.
+        if (res.status >= 500) {
+          setStatus("unavailable");
+          return;
+        }
         const data = await res.json().catch(() => ({}) as Record<string, unknown>);
         const msg =
           typeof data?.error === "string"
@@ -176,8 +206,7 @@ export function DemoModal() {
       }
       setStatus("success");
     } catch {
-      setErrorMsg("Network error. Please try again shortly.");
-      setStatus("error");
+      setStatus("unavailable");
     }
   };
 
@@ -211,6 +240,11 @@ export function DemoModal() {
 
         {status === "success" ? (
           <SuccessPanel onClose={() => setOpen(false)} />
+        ) : status === "unavailable" ? (
+          <UnavailablePanel
+            mailtoHref={buildMailtoFallback(form)}
+            onClose={() => setOpen(false)}
+          />
         ) : (
           <form onSubmit={onSubmit} className="p-7 sm:p-9 space-y-6" noValidate>
             <header className="space-y-2 pr-8">
@@ -392,6 +426,48 @@ export function DemoModal() {
         @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(8px) scale(0.985) } to { opacity: 1; transform: translateY(0) scale(1) } }
       `}</style>
+    </div>
+  );
+}
+
+function UnavailablePanel({
+  mailtoHref,
+  onClose,
+}: {
+  mailtoHref: string;
+  onClose: () => void;
+}) {
+  return (
+    <div className="p-9 sm:p-11 space-y-6">
+      <div className="space-y-2.5">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-400">
+          Demo request
+        </div>
+        <h3 className="text-xl font-semibold text-zinc-50 tracking-tight">
+          Our demo form is temporarily offline.
+        </h3>
+        <p className="text-sm text-zinc-300 leading-relaxed">
+          Send the details you just entered straight to our team — opens in
+          your email app, pre-filled. We'll come back to you the same way.
+        </p>
+      </div>
+
+      <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
+        <button
+          type="button"
+          onClick={onClose}
+          className="h-11 px-5 rounded-lg border border-zinc-800 text-sm font-semibold text-zinc-300 hover:bg-zinc-900 hover:border-zinc-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50"
+        >
+          Cancel
+        </button>
+        <a
+          href={mailtoHref}
+          className="h-11 px-6 rounded-lg bg-white text-sm font-semibold text-zinc-950 hover:bg-zinc-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50 inline-flex items-center justify-center gap-2"
+        >
+          <Mail className="h-4 w-4" />
+          Email demo@useoffloadr.com
+        </a>
+      </div>
     </div>
   );
 }
