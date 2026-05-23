@@ -93,7 +93,7 @@ function SecondaryCTA({ children, href = LOGIN_HREF }: { children: React.ReactNo
 
 function HeroVisual() {
   return (
-    <div className="relative mx-auto w-full max-w-md h-[440px] md:h-[460px]">
+    <div className="relative mx-auto w-[340px] h-[420px] sm:w-[400px] sm:h-[440px] lg:w-[400px] lg:h-[440px] xl:w-[440px] xl:h-[460px]">
       {/* Static glow halo — no animation */}
       <div
         aria-hidden
@@ -107,7 +107,7 @@ function HeroVisual() {
 
       {/* Top-left: Student uploads card (offset, slight rotation) */}
       <div
-        className="absolute top-0 left-0 w-[240px] rounded-xl border border-white/[0.08] bg-zinc-950/85 backdrop-blur-sm p-4 brand-card shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)]"
+        className="absolute top-0 left-0 w-[200px] sm:w-[220px] xl:w-[240px] rounded-xl border border-white/[0.08] bg-zinc-950/85 backdrop-blur-sm p-4 brand-card shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)]"
         style={{ transform: "rotate(-3deg)" }}
       >
         <div className="flex items-center gap-2 mb-3">
@@ -136,7 +136,7 @@ function HeroVisual() {
 
       {/* Bottom-right: Final MP4 ready card */}
       <div
-        className="absolute bottom-0 right-0 w-[240px] rounded-xl border border-white/[0.08] bg-zinc-950/85 backdrop-blur-sm p-4 brand-card shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)]"
+        className="absolute bottom-0 right-0 w-[200px] sm:w-[220px] xl:w-[240px] rounded-xl border border-white/[0.08] bg-zinc-950/85 backdrop-blur-sm p-4 brand-card shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)]"
         style={{ transform: "rotate(3deg)" }}
       >
         <div className="flex items-center gap-2 mb-3">
@@ -158,7 +158,7 @@ function HeroVisual() {
 
       {/* Centre: main Episode 4 card (largest, slight tilt the other way) */}
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(280px,calc(100vw-3rem))] sm:w-[320px] md:w-[340px] rounded-2xl border border-white/[0.10] bg-zinc-950/90 backdrop-blur-sm p-5 brand-card shadow-[0_40px_120px_-40px_rgba(0,0,0,0.95)] z-10"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] sm:w-[300px] xl:w-[330px] rounded-2xl border border-white/[0.10] bg-zinc-950/90 backdrop-blur-sm p-5 brand-card shadow-[0_40px_120px_-40px_rgba(0,0,0,0.95)] z-10"
         style={{ transform: "translate(-50%, -50%) rotate(-1deg)" }}
       >
         <div className="flex items-center justify-between mb-5">
@@ -240,7 +240,7 @@ function Hero() {
       </div>
 
       <div className="container pt-16 md:pt-24 pb-16 md:pb-24 relative z-10">
-        <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-10 lg:gap-20 items-center">
+        <div className="grid lg:grid-cols-[minmax(0,1fr)_440px] xl:grid-cols-[minmax(0,1fr)_480px] gap-10 lg:gap-16 items-center">
           <div className="space-y-7 min-w-0 relative z-10">
             <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-300">
               <span
@@ -305,7 +305,7 @@ function Hero() {
             </div>
           </div>
 
-          <div className="min-w-0 lg:overflow-hidden lg:py-8">
+          <div className="relative flex items-center justify-center lg:py-8">
             <HeroVisual />
           </div>
         </div>
