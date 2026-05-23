@@ -44,11 +44,15 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
         <div className="container flex h-16 items-center justify-between gap-8">
           <Link href="/" className="flex items-center gap-2.5 group" aria-label="Offloadr">
             <img
-              src={`${import.meta.env.BASE_URL}logo.png`}
-              alt="Offloadr"
-              className="h-7 w-auto brightness-0 invert"
+              src={`${import.meta.env.BASE_URL}logo-icon.png`}
+              alt=""
+              aria-hidden="true"
+              className="h-7 w-auto"
             />
-            <span className="hidden sm:inline text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500 group-hover:text-zinc-400 transition-colors">
+            <span className="text-[19px] font-semibold tracking-tight text-white leading-none">
+              Offloadr
+            </span>
+            <span className="hidden sm:inline text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500 group-hover:text-zinc-400 transition-colors pl-1 border-l border-white/10 ml-1 py-1">
               for schools
             </span>
           </Link>
@@ -86,13 +90,17 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
       <footer className="border-t border-white/[0.06] py-12">
         <div className="container">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <img
-                src={`${import.meta.env.BASE_URL}logo.png`}
-                alt="Offloadr"
-                className="h-6 w-auto brightness-0 invert"
+                src={`${import.meta.env.BASE_URL}logo-icon.png`}
+                alt=""
+                aria-hidden="true"
+                className="h-6 w-auto"
               />
-              <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500">
+              <span className="text-[17px] font-semibold tracking-tight text-white leading-none">
+                Offloadr
+              </span>
+              <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-zinc-500 pl-2 border-l border-white/10 ml-1 py-1">
                 for schools
               </span>
             </div>
