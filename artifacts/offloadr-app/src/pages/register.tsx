@@ -23,7 +23,6 @@ const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  studioName: z.string().optional(),
 });
 
 export default function Register() {
@@ -37,7 +36,6 @@ export default function Register() {
       name: "",
       email: "",
       password: "",
-      studioName: "",
     },
   });
 
@@ -109,19 +107,6 @@ export default function Register() {
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input placeholder="••••••••" type="password" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="studioName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Studio Name (Optional)</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Acme Productions" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

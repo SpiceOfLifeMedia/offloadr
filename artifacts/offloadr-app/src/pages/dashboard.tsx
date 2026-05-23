@@ -1,7 +1,8 @@
 import { MainLayout } from "@/components/layout/main-layout";
-import { useGetDashboardStats, useListProjects, getGetDashboardStatsQueryKey } from "@/api-client";
+import { useGetDashboardStats, useListProjects } from "@/api-client";
+import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FolderKanban, FileBox, HardDrive, AlertCircle, Loader2 } from "lucide-react";
+import { FolderKanban, FileBox, HardDrive, AlertCircle, Loader2, GraduationCap } from "lucide-react";
 import { Link } from "wouter";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,12 +31,26 @@ function StatusBadge({ status }: { status: string }) {
 export default function Dashboard() {
   const { data: stats, isLoading: statsLoading } = useGetDashboardStats();
   const { data: projects, isLoading: projectsLoading } = useListProjects();
+  const { user } = useAuth();
+  const firstName = (user?.name ?? "").trim().split(/\s+/)[0] || "there";
+  const isStaff = user?.role === "ems_staff";
 
   return (
     <MainLayout>
       <div className="flex-1 space-y-6 p-8 overflow-y-auto">
-        <div className="flex items-center justify-between">
-          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <h2 className="text-3xl font-bold tracking-tight">Welcome back, {firstName}</h2>
+              <Badge variant="secondary" className="gap-1 text-[11px]">
+                <GraduationCap className="h-3 w-3" />
+                {isStaff ? "Staff Account" : "Teacher Account"}
+              </Badge>
+            </div>
+            <p className="text-muted-foreground text-sm">
+              Your class media projects and recent student uploads.
+            </p>
+          </div>
           <Link href="/projects/new">
             <Button>Create Project</Button>
           </Link>
@@ -96,24 +111,32 @@ export default function Dashboard() {
             <div className="rounded-md border bg-card text-card-foreground">
               {projects && projects.length > 0 ? (
                 <div className="divide-y">
-                  {projects.map((project) => (
-                    <div key={project.id} className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
-                      <div className="space-y-1">
-                        <Link href={`/projects/${project.id}`} className="font-medium hover:underline">
-                          {project.projectName}
-                        </Link>
-                        <div className="text-sm text-muted-foreground">
-                          {project.clientName} • {new Date(project.createdAt).toLocaleDateString()}
+                  {projects.map((project) => {
+                    const meta = [
+                      project.classGroup,
+                      project.lessonType,
+                      project.dueDate ? `Due ${project.dueDate}` : null,
+                    ].filter(Boolean).join(" • ");
+                    return (
+                      <div key={project.id} className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
+                        <div className="space-y-1 min-w-0">
+                          <Link href={`/projects/${project.id}`} className="font-medium hover:underline">
+                            {project.projectName}
+                          </Link>
+                          <div className="text-sm text-muted-foreground truncate">
+                            {meta || project.clientName || "No class assigned"}
+                            <span className="text-muted-foreground/60"> • {new Date(project.createdAt).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="text-sm text-muted-foreground">
+                            {project.fileCount} files ({formatBytes(project.totalSize)})
+                          </div>
+                          <StatusBadge status={project.status} />
                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <div className="text-sm text-muted-foreground">
-                          {project.fileCount} files ({formatBytes(project.totalSize)})
-                        </div>
-                        <StatusBadge status={project.status} />
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="p-8 text-center text-muted-foreground">

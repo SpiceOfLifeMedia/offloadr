@@ -30,11 +30,11 @@ import {
   FileVideo,
   FileImage,
   File,
-  FolderOpen,
   ArrowLeft,
   X,
   AlertTriangle,
   Upload,
+  User as UserIcon,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -46,14 +46,7 @@ const MEDIA_ROLES = [
   "Thumbnail", "Backup", "Other",
 ];
 
-const FOLDER_STRUCTURE = [
-  { id: "01_AUDIO", label: "01_AUDIO", types: ["audio"], roles: ["Rodecaster Multitrack", "Stereo Mix", "Host Mic", "Guest Mic"] },
-  { id: "02_VIDEO", label: "02_VIDEO", types: ["video"], roles: ["Program Video", "Camera 1", "Camera 2", "Camera 3", "Camera 4", "Camera ISO", "Screen Recording"] },
-  { id: "03_PROJECT_FILES", label: "03_PROJECT_FILES", types: ["project_file"], roles: ["Project File"] },
-  { id: "04_EXPORTS", label: "04_EXPORTS", types: ["export"], roles: ["Final Export"] },
-  { id: "05_NOTES", label: "05_NOTES", types: ["document"], roles: [] },
-  { id: "UNTAGGED", label: "Untagged / Other", types: [], roles: ["Other", "Thumbnail", "Backup"] },
-];
+const TEACHER_BUCKET_LABEL = "Teacher / unassigned uploads";
 
 function formatBytes(bytes: number) {
   if (!+bytes) return "0 B";
@@ -158,22 +151,29 @@ export default function ProjectFiles() {
     );
   };
 
-  const getFilesForFolder = (folder: typeof FOLDER_STRUCTURE[0]) => {
-    if (!files) return [];
-    if (folder.id === "UNTAGGED") {
-      return files.filter((f) => {
-        const inOtherFolder = FOLDER_STRUCTURE.slice(0, -1).some(
-          (other) =>
-            other.types.includes(f.fileType) ||
-            (f.mediaRole && other.roles.includes(f.mediaRole)),
-        );
-        return !inOtherFolder;
-      });
+  const groupedByStudent = (() => {
+    const map = new Map<string, MediaFile[]>();
+    const order: string[] = [];
+    for (const f of files ?? []) {
+      const isStudent = f.uploaderKind === "student";
+      const key = isStudent && f.studentUploaderName
+        ? f.studentUploaderName.trim()
+        : TEACHER_BUCKET_LABEL;
+      if (!map.has(key)) {
+        map.set(key, []);
+        order.push(key);
+      }
+      map.get(key)!.push(f);
     }
-    return files.filter(
-      (f) => folder.types.includes(f.fileType) || (f.mediaRole && folder.roles.includes(f.mediaRole)),
-    );
-  };
+    // Push the teacher bucket to the end
+    return order
+      .sort((a, b) => {
+        if (a === TEACHER_BUCKET_LABEL) return 1;
+        if (b === TEACHER_BUCKET_LABEL) return -1;
+        return a.localeCompare(b);
+      })
+      .map((key) => ({ key, files: map.get(key)! }));
+  })();
 
   const missingCount = files?.filter((f) => f.isMissing).length ?? 0;
 
@@ -187,7 +187,7 @@ export default function ProjectFiles() {
             </Button>
           </Link>
           <div className="flex-1">
-            <h1 className="text-3xl font-bold tracking-tight">File Structure</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Student uploads</h1>
             {project && <p className="text-muted-foreground mt-1">{project.projectName}</p>}
           </div>
           <Link href={`/projects/${projectId}/upload`}>
@@ -223,23 +223,25 @@ export default function ProjectFiles() {
           </div>
         ) : (
           <div className="space-y-4">
-            {FOLDER_STRUCTURE.map((folder) => {
-              const folderFiles = getFilesForFolder(folder);
-              if (folderFiles.length === 0 && folder.id === "UNTAGGED") return null;
+            {groupedByStudent.map((group) => {
+              const isTeacher = group.key === TEACHER_BUCKET_LABEL;
+              const totalBytes = group.files.reduce((acc, f) => acc + Number(f.fileSize), 0);
               return (
-                <div key={folder.id} className="border rounded-lg overflow-hidden">
+                <div key={group.key} className="border rounded-lg overflow-hidden">
                   <div className="flex items-center gap-3 px-4 py-3 bg-muted/50 border-b">
-                    <FolderOpen className="h-4 w-4 text-amber-500" />
-                    <span className="font-mono text-sm font-semibold">{folder.label}</span>
+                    <UserIcon className={`h-4 w-4 ${isTeacher ? "text-muted-foreground" : "text-primary"}`} />
+                    <span className={`text-sm font-semibold ${isTeacher ? "text-muted-foreground" : ""}`}>
+                      {group.key}
+                    </span>
                     <Badge variant="secondary" className="ml-auto text-xs">
-                      {folderFiles.length} file{folderFiles.length !== 1 ? "s" : ""}
+                      {group.files.length} file{group.files.length !== 1 ? "s" : ""} · {formatBytes(totalBytes)}
                     </Badge>
                   </div>
-                  {folderFiles.length === 0 ? (
-                    <div className="px-4 py-3 text-sm text-muted-foreground">No files in this folder</div>
+                  {group.files.length === 0 ? (
+                    <div className="px-4 py-3 text-sm text-muted-foreground">No files in this group</div>
                   ) : (
                     <div className="divide-y">
-                      {folderFiles.map((file) => {
+                      {group.files.map((file) => {
                         const missing = !!file.isMissing;
                         const isReplacing = replacingId === file.id;
                         return (

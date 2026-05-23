@@ -50,10 +50,6 @@ export default function Settings() {
                 <Label htmlFor="email">Email</Label>
                 <Input id="email" type="email" defaultValue={user?.email ?? ""} />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="studioName">Studio name</Label>
-                <Input id="studioName" defaultValue={user?.studioName ?? ""} placeholder="e.g. Spice of Life Media" />
-              </div>
             </CardContent>
           </Card>
 

@@ -3,7 +3,8 @@ import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useLogoutUser } from "@/api-client";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, FolderOpen, HardDrive, Settings, HelpCircle, LogOut, Loader2, Plus } from "lucide-react";
+import { LayoutDashboard, FolderOpen, HardDrive, Settings, HelpCircle, LogOut, Loader2, Plus, Cpu } from "lucide-react";
+import { PilotBanner } from "@/components/PilotBanner";
 import { 
   Sidebar, 
   SidebarHeader, 
@@ -47,8 +48,9 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background">
         <Sidebar>
-          <SidebarHeader className="flex items-center px-4 py-6 border-b">
-            <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Offloadr" className="h-7 w-auto dark:invert" />
+          <SidebarHeader className="flex items-center gap-2 px-4 py-6 border-b">
+            <img src={`${import.meta.env.BASE_URL}favicon.png`} alt="" className="h-7 w-7" />
+            <span className="text-lg font-semibold tracking-tight text-foreground">Offloadr</span>
           </SidebarHeader>
           <SidebarContent>
             <SidebarGroup>
@@ -78,6 +80,14 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
                       <Link href="/storage" className="flex items-center gap-2">
                         <HardDrive className="h-4 w-4" />
                         <span>Storage</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild isActive={location.startsWith("/devices")}>
+                      <Link href="/devices" className="flex items-center gap-2">
+                        <Cpu className="h-4 w-4" />
+                        <span>Devices</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -123,6 +133,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
           </SidebarFooter>
         </Sidebar>
         <main className="flex-1 flex flex-col min-h-0 overflow-hidden">
+          <PilotBanner />
           {children}
         </main>
       </div>

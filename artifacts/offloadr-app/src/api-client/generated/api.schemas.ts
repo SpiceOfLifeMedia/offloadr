@@ -23,7 +23,6 @@ export interface RegisterUserBody {
   email: string;
   /** @minLength 6 */
   password: string;
-  studioName?: string | null;
 }
 
 export interface LoginUserBody {
@@ -36,7 +35,6 @@ export interface User {
   name: string;
   email: string;
   role: string;
-  studioName?: string | null;
   createdAt: string;
 }
 
@@ -56,6 +54,8 @@ export const ProjectStatus = {
   archived: "archived",
 } as const;
 
+// NOTE: Project / CreateProjectBody / UpdateProjectBody are NOT in openapi.yaml.
+// Edited by hand. Do not re-run codegen without first defining these in the spec.
 export interface Project {
   id: number;
   userId: number;
@@ -68,6 +68,14 @@ export interface Project {
   editorNotes?: string | null;
   expectedCameraCount?: number | null;
   expectedAudioSetup?: string | null;
+  classGroup?: string | null;
+  lessonType?: string | null;
+  studentInstructions?: string | null;
+  uploadMethod?: string | null;
+  dueDate?: string | null;
+  submissionStatus?: "draft" | "needs_review" | "approved" | "rejected" | "exported";
+  studentWorkflowChoice?: "smart_draft" | "manual" | null;
+  studentWorkflowChoiceAt?: string | null;
   fileCount: number;
   totalSize: number;
   createdAt: string;
@@ -83,6 +91,11 @@ export interface CreateProjectBody {
   editorNotes?: string | null;
   expectedCameraCount?: number | null;
   expectedAudioSetup?: string | null;
+  classGroup?: string | null;
+  lessonType?: string | null;
+  studentInstructions?: string | null;
+  uploadMethod?: string | null;
+  dueDate?: string | null;
 }
 
 export interface UpdateProjectBody {
@@ -95,6 +108,11 @@ export interface UpdateProjectBody {
   editorNotes?: string | null;
   expectedCameraCount?: number | null;
   expectedAudioSetup?: string | null;
+  classGroup?: string | null;
+  lessonType?: string | null;
+  studentInstructions?: string | null;
+  uploadMethod?: string | null;
+  dueDate?: string | null;
 }
 
 export type MissingFilesResponseItemsItem = {
@@ -150,6 +168,9 @@ export interface MediaFile {
   createdAt: string;
   updatedAt: string;
   isMissing?: boolean;
+  uploaderKind?: "user" | "student";
+  studentUploaderName?: string | null;
+  studentUploadCodeId?: number | null;
 }
 
 export interface UpdateFileBody {
