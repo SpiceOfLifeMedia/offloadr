@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -20,10 +20,14 @@ const queryClient = new QueryClient({
 const PILOT_URL = "https://offloadr-pilot.fly.dev/offloadr/";
 
 function PilotRedirect() {
-  if (typeof window !== "undefined") {
+  useEffect(() => {
     window.location.replace(PILOT_URL);
-  }
-  return null;
+  }, []);
+  return (
+    <div className="flex min-h-[60vh] items-center justify-center text-sm text-zinc-500">
+      Redirecting to the Offloadr pilot…
+    </div>
+  );
 }
 
 function RouteFallback() {
