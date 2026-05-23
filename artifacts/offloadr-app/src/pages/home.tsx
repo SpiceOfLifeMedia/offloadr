@@ -240,8 +240,8 @@ function Hero() {
       </div>
 
       <div className="container pt-16 md:pt-24 pb-16 md:pb-24 relative z-10">
-        <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-10 lg:gap-14 items-center">
-          <div className="space-y-7">
+        <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-10 lg:gap-20 items-center">
+          <div className="space-y-7 min-w-0 relative z-10">
             <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-300">
               <span
                 className="h-1.5 w-1.5 rounded-full brand-pulse"
@@ -305,7 +305,7 @@ function Hero() {
             </div>
           </div>
 
-          <div className="min-w-0">
+          <div className="min-w-0 lg:overflow-hidden lg:py-8">
             <HeroVisual />
           </div>
         </div>
@@ -362,22 +362,23 @@ function HowItWorks() {
           subtitle="Four quiet steps. No drives, no DIY pipelines, no late nights chasing files."
         />
 
-        <div className="mt-10 relative">
+        <div className="mt-8 relative">
           {/* Gradient connector line behind the cards (desktop only) */}
           <div
             aria-hidden
-            className="hidden lg:block absolute top-12 left-[12.5%] right-[12.5%] h-px pointer-events-none"
+            className="hidden lg:block absolute top-[68px] left-[12.5%] right-[12.5%] h-0.5 pointer-events-none rounded-full"
             style={{
               background:
-                "linear-gradient(90deg, rgb(0 128 255 / 0.35), rgb(79 70 229 / 0.35), rgb(124 58 237 / 0.35), rgb(16 185 129 / 0.35))",
+                "linear-gradient(90deg, rgb(0 128 255 / 0.6), rgb(79 70 229 / 0.6), rgb(124 58 237 / 0.6), rgb(16 185 129 / 0.6))",
+              opacity: 0.5,
             }}
           />
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 relative">
             {STEPS.map((s) => (
               <div
                 key={s.n}
-                className="brand-card rounded-2xl border border-white/[0.06] bg-zinc-950/80 p-7"
+                className="brand-card relative z-10 rounded-2xl border border-white/[0.06] bg-zinc-950/80 p-7"
               >
                 <div className="flex items-center justify-between mb-6">
                   <div className={`brand-icon ${s.tint}`}>
@@ -412,7 +413,7 @@ function WorkflowSection() {
       label: "Students",
       icon: Users,
       tint: "brand-blue",
-      checkColor: "text-[rgb(96_165_250)]",
+      checkColor: "text-[rgb(0_128_255)]",
       items: [
         "Ava recorded interview",
         "Mia recorded B-roll",
@@ -423,7 +424,7 @@ function WorkflowSection() {
       label: "Offloadr",
       icon: School,
       tint: "brand-indigo",
-      checkColor: "text-[rgb(167_139_250)]",
+      checkColor: "text-[rgb(129_140_248)]",
       items: [
         "Sorted into Year 6 · Episode 4",
         "All 8 takes verified",

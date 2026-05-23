@@ -104,7 +104,7 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
               </span>
             </div>
             <div className="text-xs text-zinc-500">
-              School media workflow infrastructure. Built in Australia.
+              School media workflow infrastructure for classrooms everywhere.
             </div>
             <div className="text-xs text-zinc-500">
               &copy; {new Date().getFullYear()} Offloadr

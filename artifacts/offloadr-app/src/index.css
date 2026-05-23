@@ -256,9 +256,10 @@
                 0 0 24px -8px rgb(var(--brand-blue) / 0.25);
   }
   .brand-indigo {
-    background: rgb(var(--brand-indigo) / 0.10);
-    border-color: rgb(var(--brand-indigo) / 0.22);
-    color: rgb(167 139 250);
+    background: rgb(var(--brand-indigo) / 0.14);
+    border-color: rgb(var(--brand-indigo) / 0.32);
+    color: rgb(129 140 248);
+    box-shadow: 0 0 24px -8px rgb(var(--brand-indigo) / 0.25);
   }
   .brand-violet {
     background: rgb(var(--brand-violet) / 0.10);
