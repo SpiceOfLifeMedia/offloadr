@@ -1,4 +1,5 @@
 import { PublicLayout } from "@/components/layout/public-layout";
+import { openDemoModal } from "@/components/marketing/demo-modal";
 import {
   ArrowRight,
   Upload,
@@ -19,9 +20,6 @@ import {
 /* -------------------------------------------------------------------------- */
 /*  Constants                                                                  */
 /* -------------------------------------------------------------------------- */
-
-const DEMO_HREF =
-  "mailto:demo@useoffloadr.com?subject=Offloadr%20school%20demo%20request&body=Hi%20Offloadr%20team%2C%0A%0AI%27d%20like%20to%20book%20a%20demo%20for%20our%20school.%0A%0ASchool%3A%20%0ARole%3A%20%0AYear%20levels%20%2F%20program%3A%20%0AStudent%20count%3A%20%0AState%3A%20%0ABest%20time%20to%20talk%3A%20%0A%0AThanks%2C";
 
 const LOGIN_HREF = "https://offloadr-pilot.fly.dev/offloadr/login";
 
@@ -65,15 +63,16 @@ function SectionHeading({
   );
 }
 
-function PrimaryCTA({ children, href = DEMO_HREF }: { children: React.ReactNode; href?: string }) {
+function PrimaryCTA({ children }: { children: React.ReactNode }) {
   return (
-    <a
-      href={href}
+    <button
+      type="button"
+      onClick={openDemoModal}
       className="inline-flex h-12 items-center justify-center rounded-lg bg-white px-7 text-sm font-semibold text-zinc-950 hover:bg-zinc-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50"
     >
       {children}
       <ArrowRight className="ml-2 h-4 w-4" />
-    </a>
+    </button>
   );
 }
 

@@ -1,7 +1,5 @@
 import { Link, useLocation } from "wouter";
-
-const DEMO_HREF =
-  "mailto:demo@useoffloadr.com?subject=Offloadr%20school%20demo%20request&body=Hi%20Offloadr%20team%2C%0A%0AI%27d%20like%20to%20book%20a%20demo%20for%20our%20school.%0A%0ASchool%3A%20%0ARole%3A%20%0AYear%20levels%20%2F%20program%3A%20%0AStudent%20count%3A%20%0AState%3A%20%0ABest%20time%20to%20talk%3A%20%0A%0AThanks%2C";
+import { DemoModal, openDemoModal } from "@/components/marketing/demo-modal";
 
 const NAV = [
   { label: "How It Works", anchor: "#how" },
@@ -50,12 +48,13 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
             >
               Log in
             </a>
-            <a
-              href={DEMO_HREF}
+            <button
+              type="button"
+              onClick={openDemoModal}
               className="inline-flex h-9 items-center rounded-md bg-white px-4 text-[13px] font-semibold text-zinc-950 hover:bg-zinc-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/40"
             >
               Book Demo
-            </a>
+            </button>
           </div>
         </div>
       </header>
@@ -82,6 +81,7 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </footer>
+      <DemoModal />
     </div>
   );
 }
