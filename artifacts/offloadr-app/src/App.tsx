@@ -7,22 +7,6 @@ import { ErrorBoundary } from "@/components/error-boundary";
 import Home from "@/pages/home";
 
 const NotFound = lazy(() => import("@/pages/not-found"));
-const Login = lazy(() => import("@/pages/login"));
-const Register = lazy(() => import("@/pages/register"));
-const Dashboard = lazy(() => import("@/pages/dashboard"));
-const ProjectNew = lazy(() => import("@/pages/project-new"));
-const ProjectDetail = lazy(() => import("@/pages/project-detail"));
-const ProjectUpload = lazy(() => import("@/pages/project-upload"));
-const ProjectFiles = lazy(() => import("@/pages/project-files"));
-const DevicesPage = lazy(() => import("@/pages/devices"));
-const SharePage = lazy(() => import("@/pages/share-page"));
-const Settings = lazy(() => import("@/pages/settings"));
-const StoragePage = lazy(() => import("@/pages/storage-page"));
-const Help = lazy(() => import("@/pages/help"));
-const StudentUpload = lazy(() => import("@/pages/student-upload"));
-const StudentUploadSession = lazy(
-  () => import("@/pages/student-upload-session"),
-);
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -32,6 +16,15 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+const PILOT_URL = "https://offloadr-pilot.fly.dev/offloadr/";
+
+function PilotRedirect() {
+  if (typeof window !== "undefined") {
+    window.location.replace(PILOT_URL);
+  }
+  return null;
+}
 
 function RouteFallback() {
   return (
@@ -46,20 +39,19 @@ function Router() {
     <Suspense fallback={<RouteFallback />}>
       <Switch>
         <Route path="/" component={Home} />
-        <Route path="/login" component={Login} />
-        <Route path="/register" component={Register} />
-        <Route path="/dashboard" component={Dashboard} />
-        <Route path="/projects/new" component={ProjectNew} />
-        <Route path="/projects/:id/upload" component={ProjectUpload} />
-        <Route path="/projects/:id/files" component={ProjectFiles} />
-        <Route path="/projects/:id" component={ProjectDetail} />
-        <Route path="/share/:token" component={SharePage} />
-        <Route path="/student-upload" component={StudentUpload} />
-        <Route path="/student-upload/:code" component={StudentUploadSession} />
-        <Route path="/settings" component={Settings} />
-        <Route path="/storage" component={StoragePage} />
-        <Route path="/devices" component={DevicesPage} />
-        <Route path="/help" component={Help} />
+        {/* Pilot app lives on Fly. Anyone hitting an app route on the
+            marketing domain gets bounced to the real pilot URL. */}
+        <Route path="/login" component={PilotRedirect} />
+        <Route path="/register" component={PilotRedirect} />
+        <Route path="/dashboard" component={PilotRedirect} />
+        <Route path="/projects/:rest*" component={PilotRedirect} />
+        <Route path="/share/:rest*" component={PilotRedirect} />
+        <Route path="/student-upload/:rest*" component={PilotRedirect} />
+        <Route path="/student-upload" component={PilotRedirect} />
+        <Route path="/settings" component={PilotRedirect} />
+        <Route path="/storage" component={PilotRedirect} />
+        <Route path="/devices" component={PilotRedirect} />
+        <Route path="/help" component={PilotRedirect} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>
