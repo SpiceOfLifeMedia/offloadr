@@ -15,9 +15,30 @@ export function PublicLayout({ children }: { children: React.ReactNode }) {
   const navHref = (anchor: string) => (onHome ? anchor : `/${anchor}`);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground relative">
+    <div className="min-h-screen flex flex-col bg-background text-foreground relative overflow-x-hidden">
       {/* Subtle dot grid — fixed behind everything, ~3% opacity. */}
       <div aria-hidden className="brand-dot-grid" />
+
+      {/* Ambient brand orbs — two only, static, ~5% opacity. Top of page only;
+          absolute (not fixed) so they fade out naturally on scroll. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute top-0 left-0 -translate-x-1/3 -translate-y-1/3 w-[640px] h-[640px] rounded-full z-0"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(0,128,255,0.05) 0%, rgba(0,128,255,0) 70%)",
+          filter: "blur(40px)",
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute top-0 right-0 translate-x-1/3 -translate-y-1/3 w-[640px] h-[640px] rounded-full z-0"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(124,58,237,0.05) 0%, rgba(124,58,237,0) 70%)",
+          filter: "blur(40px)",
+        }}
+      />
 
       <header className="border-b border-white/[0.06] bg-zinc-950/80 backdrop-blur-md supports-[backdrop-filter]:bg-zinc-950/65 sticky top-0 z-50">
         <div className="container flex h-16 items-center justify-between gap-8">
