@@ -511,16 +511,17 @@ export default function Home() {
               <div className="space-y-7">
                 <div className="inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/50 px-3 py-1 text-[11px] font-medium text-zinc-400">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                  Joining the closed beta — production teams only
+                  Now piloting with schools and classroom media programs
                 </div>
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.02] text-zinc-100">
-                  The missing link between
+                  Classroom recordings,
                   <br />
-                  <span className="text-zinc-500">recording and editing.</span>
+                  <span className="text-zinc-500">ready to edit before the bell.</span>
                 </h1>
                 <p className="text-lg md:text-xl text-zinc-400 leading-relaxed max-w-xl">
-                  Offloadr automatically uploads, verifies, organises and prepares production
-                  media for editors the moment recording ends.
+                  Offloadr takes over the moment a class stops recording — automatically
+                  uploading, verifying, organising and handing every take to the editor
+                  or the next student in the workflow.
                 </p>
                 <div className="flex flex-wrap items-center gap-4 pt-2">
                   <a
@@ -530,6 +531,12 @@ export default function Home() {
                     Join the Beta <ArrowRight className="h-4 w-4" />
                   </a>
                   <a
+                    href="https://offloadr-pilot.fly.dev/offloadr/login"
+                    className="inline-flex h-12 items-center rounded-md border border-zinc-700 px-7 text-base font-semibold text-zinc-100 hover:bg-zinc-900 hover:border-zinc-600 transition-colors gap-1.5"
+                  >
+                    Log in to the app <ArrowRight className="h-4 w-4" />
+                  </a>
+                  <a
                     href="#handoff"
                     className="text-sm font-medium text-zinc-400 hover:text-zinc-100 inline-flex items-center gap-1.5 transition-colors"
                   >
@@ -537,7 +544,7 @@ export default function Home() {
                   </a>
                 </div>
                 <div className="text-xs text-zinc-500 pt-1">
-                  Offloadr does not record. Offloadr takes over when the recording ends.
+                  Offloadr doesn't record. It takes over the moment recording stops, so teachers and producers don't carry drives home.
                 </div>
               </div>
 
@@ -706,12 +713,13 @@ export default function Home() {
             <div className="max-w-3xl space-y-3 mb-12">
               <SectionEyebrow>Who it's for</SectionEyebrow>
               <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-zinc-100">
-                Built for teams where losing a file is a real problem.
+                Built for classrooms and studios where a lost take is a real problem.
               </h2>
               <p className="text-base text-zinc-400 leading-relaxed max-w-2xl">
-                Offloadr is built for organised production environments — where there are
-                handoffs, deadlines, and people downstream who depend on the work being
-                ready when they sit down to it.
+                Offloadr is built for media programs and production teams with real
+                handoffs — teachers passing footage to student editors, producers passing
+                projects to post, and anyone downstream who needs the takes ready,
+                organised and accounted for the moment recording ends.
               </p>
             </div>
 
@@ -722,10 +730,10 @@ export default function Home() {
                 </div>
                 <ul className="space-y-3 text-sm text-zinc-200">
                   {[
-                    "Podcast studios",
                     "Schools with media programs",
                     "Education media departments",
                     "Student media teams",
+                    "Podcast studios",
                     "Small production houses",
                   ].map((t) => (
                     <li key={t} className="flex items-center gap-3">
