@@ -1,0 +1,5 @@
+{
+  "name": "offloadr-vercel-functions",
+  "private": true,
+  "type": "module"
+}
