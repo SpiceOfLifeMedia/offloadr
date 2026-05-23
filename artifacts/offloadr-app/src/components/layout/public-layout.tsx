@@ -3,7 +3,6 @@ import { DemoModal, openDemoModal } from "@/components/marketing/demo-modal";
 
 const NAV = [
   { label: "How It Works", anchor: "#how" },
-  { label: "For Schools", anchor: "#for-schools" },
   { label: "Classroom Workflow", anchor: "#workflow" },
   { label: "AI Editing", anchor: "#ai" },
   { label: "Security", anchor: "#security" },

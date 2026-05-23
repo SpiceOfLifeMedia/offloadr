@@ -626,12 +626,13 @@ function AIEditingSection() {
             <div className="mt-5 flex items-center justify-between rounded-lg bg-zinc-900/60 ring-1 ring-white/[0.04] px-3.5 py-2.5">
               <div className="flex items-center gap-2.5 text-[12px] text-zinc-200">
                 <svg
-                  className="h-3.5 w-3.5 brand-pulse"
+                  className="h-3.5 w-3.5 animate-spin motion-reduce:animate-none"
                   viewBox="0 0 24 24"
                   fill="none"
                   aria-hidden
                 >
-                  <circle cx="12" cy="12" r="9" stroke="rgb(167 139 250)" strokeWidth="2" strokeLinecap="round" strokeDasharray="40 18" />
+                  <circle cx="12" cy="12" r="9" stroke="rgb(167 139 250 / 0.25)" strokeWidth="2" />
+                  <path d="M21 12a9 9 0 0 0-9-9" stroke="rgb(167 139 250)" strokeWidth="2" strokeLinecap="round" />
                 </svg>
                 <span className="font-semibold">Building draft…</span>
                 <span className="text-zinc-500 hidden sm:inline">
