@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+.vite/
+
+# Environment — never commit secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+pino-*.log
+
+# Database dumps
+*.dump
+*.sql.gz
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Replit (not needed outside Replit)
+.replit
+.replitignore
+replit.md
+.local/
+.agents/
+.cache/
+.config/
+
+# Vercel build cache
+.vercel/
+
+# TypeScript build info
+*.tsbuildinfo

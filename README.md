@@ -1,71 +1,82 @@
 # Offloadr
 
-Producer hand-off and project-management app. Producers upload tracks, files, stems, and notes for a project, then share a private hand-off page with the artist or team.
+A media upload/management platform for podcast studios and schools. Students
+record and upload footage; Offloadr organises it, prepares AI draft videos, and
+gives teachers a final MP4 to review, download and share.
 
-This repository is the **current source-of-truth mirror** of Offloadr. The app currently runs on Replit; this mirror exists so the project is portable and can be moved to other infrastructure when needed.
-
-## Stack
-
-- **Frontend**: React 18 + Vite + Tailwind + wouter + Tanstack Query (`artifacts/offloadr-app`)
-- **API**: Express 5 + Drizzle ORM, session-based auth (`artifacts/offloadr-api`)
-- **DB**: PostgreSQL via `lib/db` (Drizzle schema)
-- **Object storage**: pluggable; currently Replit App Storage / GCS via `@google-cloud/storage`
-- **Shared contract**: OpenAPI in `lib/api-spec`, generated Zod schemas in `lib/api-zod`, generated React Query hooks in `lib/api-client-react`
-- **Build**: pnpm workspace, TypeScript 5.9
-
-## Local development (off Replit)
-
-This repo will install and typecheck out of the box. Running it requires the env vars listed below.
-
-```bash
-pnpm install
-pnpm --filter @workspace/api-spec run codegen   # regenerate clients if the spec changed
-
-# Frontend (build only — dev server currently requires PORT + BASE_PATH; see DEPLOYMENT.md)
-pnpm --filter @workspace/offloadr-app run typecheck
-
-# API
-pnpm --filter @workspace/offloadr-api run typecheck
-pnpm --filter @workspace/offloadr-api run build
-pnpm --filter @workspace/offloadr-api run start
-```
-
-### Required environment variables
-
-API (`artifacts/offloadr-api`):
-
-- `DATABASE_URL` — Postgres connection string
-- `SESSION_SECRET` — express-session secret
-- `PORT` — port the API listens on (defaults to 5001 in dev)
-- `API_MOUNT_PATH` — path prefix the API is mounted at (e.g. `/offloadr/api`)
-- `PRIVATE_OBJECT_DIR` — `gs://<bucket>/<prefix>` for the GCS-backed object store (Replit App Storage today)
-
-Frontend (`artifacts/offloadr-app`):
-
-- `PORT` — required by the current Vite config (dev only)
-- `BASE_PATH` — required by the current Vite config; the public path the SPA is served at (e.g. `/offloadr/`)
-- `API_PORT` — port the dev server should proxy `/api` to (defaults to `5001`)
-
-## Deployment
-
-This repo is **not currently wired to any host**. See [`DEPLOYMENT.md`](./DEPLOYMENT.md) for:
-
-- exactly which parts of Offloadr are Replit-specific today
-- what needs to change before Offloadr can leave Replit cleanly
-- short-term and long-term hosting options (Replit, Railway/Render/Fly, Vercel, Neon/Supabase, R2/S3)
+This repository is a **pnpm workspace monorepo**.
 
 ## Repository layout
 
 ```
 artifacts/
-  offloadr-app/        Vite + React frontend
-  offloadr-api/        Express API
+  offloadr-app/   Vite + React web app (frontend)
+  api-server/     Express 5 API server (backend)
 lib/
-  db/                  Drizzle schema + client
-  api-spec/            OpenAPI source of truth
-  api-zod/             Generated Zod schemas (from openapi.yaml)
-  api-client-react/    Generated React Query client (from openapi.yaml)
-package.json           pnpm workspace root
-pnpm-workspace.yaml    workspace + dependency catalog
-DEPLOYMENT.md          hosting + Replit-dependency notes
+  db/             Drizzle ORM schema + DB helpers
+  api-zod/        Zod schemas generated from the OpenAPI spec
+  api-client-react/  Generated React Query hooks
+  client/         Shared API client helpers
+  upload/         Shared upload utilities
+scripts/          Workspace scripts (post-merge, etc.)
+docs/             Setup & operational docs
 ```
+
+## Stack
+
+- pnpm workspaces, Node.js 24, TypeScript 5.9
+- **Frontend:** Vite 7 + React + Tailwind + Radix UI + TanStack Query + wouter
+- **Backend:** Express 5 + pino logging + express-session (Postgres-backed)
+- **Database:** PostgreSQL + Drizzle ORM
+- **Validation:** Zod
+- **File transfer:** rclone (system binary) for Google Drive uploads
+- **Storage:** local filesystem (default) or S3 / Cloudflare R2
+
+## Quick start
+
+```bash
+# 1. Install dependencies (pnpm required)
+pnpm install
+
+# 2. Configure environment
+cp .env.example .env   # then fill in real values (see docs/SETUP.md)
+
+# 3. Provision the database schema
+pnpm --filter @workspace/db run push
+
+# 4. Run the apps in dev
+pnpm --filter @workspace/api-server run dev   # API server
+pnpm --filter @workspace/offloadr-app run dev # Web app
+```
+
+Full rebuild-from-scratch instructions are in **[docs/SETUP.md](docs/SETUP.md)**.
+
+## Environment variables
+
+Every variable is documented in [`.env.example`](.env.example). The only two
+**required** variables are `DATABASE_URL` and `SESSION_SECRET`. See
+[docs/SETUP.md](docs/SETUP.md) for the full table and which are secrets.
+
+## Build
+
+```bash
+pnpm run typecheck   # typecheck all packages
+pnpm run build       # typecheck + build all packages
+```
+
+- Web app build output: `artifacts/offloadr-app/dist/`
+- API server build output: `artifacts/api-server/dist/index.mjs`
+
+In production the API server can serve the built web app by setting
+`STATIC_WEB_DIR` to the web app's `dist/` directory.
+
+## Deployment
+
+This app is designed to run as a **long-running Node service** (Replit
+autoscale / any Node host / VM / container). It is **not** a serverless/Vercel
+app as-is — see the "Deploying" section of [docs/SETUP.md](docs/SETUP.md) for
+details and the blockers involved.
+
+## License
+
+MIT

@@ -56,6 +56,13 @@ export const ProjectStatus = {
 
 // NOTE: Project / CreateProjectBody / UpdateProjectBody are NOT in openapi.yaml.
 // Edited by hand. Do not re-run codegen without first defining these in the spec.
+//
+// projectWorkflowType is the project-level workflow selector (V1: only
+// podcast_studio or general_video). Returned on every Project response
+// (server defaults to "general_video" for any row missing one). Sent on
+// create + update.
+export type ProjectWorkflowType = "podcast_studio" | "general_video";
+
 export interface Project {
   id: number;
   userId: number;
@@ -76,6 +83,7 @@ export interface Project {
   submissionStatus?: "draft" | "needs_review" | "approved" | "rejected" | "exported";
   studentWorkflowChoice?: "smart_draft" | "manual" | null;
   studentWorkflowChoiceAt?: string | null;
+  projectWorkflowType?: ProjectWorkflowType;
   fileCount: number;
   totalSize: number;
   createdAt: string;
@@ -96,6 +104,7 @@ export interface CreateProjectBody {
   studentInstructions?: string | null;
   uploadMethod?: string | null;
   dueDate?: string | null;
+  projectWorkflowType?: ProjectWorkflowType;
 }
 
 export interface UpdateProjectBody {
@@ -113,6 +122,7 @@ export interface UpdateProjectBody {
   studentInstructions?: string | null;
   uploadMethod?: string | null;
   dueDate?: string | null;
+  projectWorkflowType?: ProjectWorkflowType;
 }
 
 export type MissingFilesResponseItemsItem = {

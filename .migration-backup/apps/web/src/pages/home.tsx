@@ -1,0 +1,807 @@
+import { PublicLayout } from "@/components/layout/public-layout";
+import { openDemoModal } from "@/components/marketing/demo-modal-trigger";
+import {
+  ArrowRight,
+  Upload,
+  Sparkles,
+  ShieldCheck,
+  CheckCircle2,
+  Lock,
+  Smartphone,
+  School,
+  Users,
+  Eye,
+  Server,
+  KeyRound,
+  GraduationCap,
+  Play,
+} from "lucide-react";
+
+/* -------------------------------------------------------------------------- */
+/*  Constants                                                                  */
+/* -------------------------------------------------------------------------- */
+
+const LOGIN_HREF = "https://offloadr-pilot.fly.dev/offloadr/login";
+
+/* -------------------------------------------------------------------------- */
+/*  Atoms                                                                      */
+/* -------------------------------------------------------------------------- */
+
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return <div className="brand-eyebrow">{children}</div>;
+}
+
+function SectionHeading({
+  eyebrow,
+  title,
+  subtitle,
+  align = "left",
+}: {
+  eyebrow: string;
+  title: string;
+  subtitle?: string;
+  align?: "left" | "center";
+}) {
+  return (
+    <div
+      className={`max-w-3xl space-y-4 ${align === "center" ? "mx-auto text-center" : ""}`}
+    >
+      <Eyebrow>{eyebrow}</Eyebrow>
+      <h2 className="text-3xl md:text-5xl font-semibold tracking-tight text-zinc-50 leading-[1.05]">
+        {title}
+      </h2>
+      {subtitle && (
+        <p
+          className={`text-base md:text-lg text-zinc-300 leading-relaxed max-w-2xl ${
+            align === "center" ? "mx-auto" : ""
+          }`}
+        >
+          {subtitle}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function PrimaryCTA({ children }: { children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={openDemoModal}
+      className="inline-flex h-12 items-center justify-center rounded-lg bg-white px-7 text-sm font-semibold text-zinc-950 hover:bg-zinc-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50"
+    >
+      {children}
+      <ArrowRight className="ml-2 h-4 w-4" />
+    </button>
+  );
+}
+
+function SecondaryCTA({ children, href = LOGIN_HREF }: { children: React.ReactNode; href?: string }) {
+  return (
+    <a
+      href={href}
+      className="inline-flex h-12 items-center justify-center rounded-lg border border-zinc-700 px-7 text-sm font-semibold text-zinc-100 hover:bg-zinc-900 hover:border-zinc-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/50"
+    >
+      {children}
+    </a>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Hero — composed static stack on the right, gradient text on headline       */
+/* -------------------------------------------------------------------------- */
+
+function HeroVisual() {
+  return (
+    <div className="relative mx-auto w-[340px] h-[420px] sm:w-[400px] sm:h-[440px] lg:w-[400px] lg:h-[440px] xl:w-[440px] xl:h-[460px]">
+      {/* Static glow halo — no animation */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -inset-16 -z-10 rounded-[3rem]"
+        style={{
+          background:
+            "radial-gradient(ellipse 60% 50% at 50% 50%, rgb(79 70 229 / 0.16) 0%, rgb(124 58 237 / 0.08) 40%, transparent 70%)",
+          filter: "blur(48px)",
+        }}
+      />
+
+      {/* Top-left: Student uploads card (offset, slight rotation) */}
+      <div
+        className="absolute top-0 left-0 w-[200px] sm:w-[220px] xl:w-[240px] rounded-xl border border-white/[0.08] bg-zinc-950/85 backdrop-blur-sm p-4 brand-card shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)]"
+        style={{ transform: "rotate(-3deg)" }}
+      >
+        <div className="flex items-center gap-2 mb-3">
+          <div className="brand-icon brand-icon-sm brand-blue">
+            <Upload className="h-3.5 w-3.5" strokeWidth={2} />
+          </div>
+          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
+            Student uploads
+          </div>
+        </div>
+        <ul className="space-y-1.5 text-[12px]">
+          <li className="flex items-center justify-between text-zinc-300">
+            <span className="truncate">interview_ava.mp4</span>
+            <span className="text-zinc-500 font-mono ml-2">84 MB</span>
+          </li>
+          <li className="flex items-center justify-between text-zinc-300">
+            <span className="truncate">b_roll_mia.mov</span>
+            <span className="text-zinc-500 font-mono ml-2">112 MB</span>
+          </li>
+          <li className="flex items-center justify-between text-zinc-300">
+            <span className="truncate">cover_noah.jpg</span>
+            <span className="text-zinc-500 font-mono ml-2">4 MB</span>
+          </li>
+        </ul>
+      </div>
+
+      {/* Bottom-right: Final MP4 ready card */}
+      <div
+        className="absolute bottom-0 right-0 w-[200px] sm:w-[220px] xl:w-[240px] rounded-xl border border-white/[0.08] bg-zinc-950/85 backdrop-blur-sm p-4 brand-card shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)]"
+        style={{ transform: "rotate(3deg)" }}
+      >
+        <div className="flex items-center gap-2 mb-3">
+          <div className="brand-icon brand-icon-sm brand-emerald">
+            <CheckCircle2 className="h-3.5 w-3.5" strokeWidth={2} />
+          </div>
+          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-400">
+            Final MP4
+          </div>
+        </div>
+        <div className="text-sm font-semibold text-zinc-100 mb-1.5">
+          Episode 4 — Approved
+        </div>
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 ring-1 ring-emerald-400/30 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+          <ShieldCheck className="h-2.5 w-2.5" />
+          Safe to download
+        </span>
+      </div>
+
+      {/* Centre: main Episode 4 card (largest, slight tilt the other way) */}
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] sm:w-[300px] xl:w-[330px] rounded-2xl border border-white/[0.10] bg-zinc-950/90 backdrop-blur-sm p-5 brand-card shadow-[0_40px_120px_-40px_rgba(0,0,0,0.95)] z-10"
+        style={{ transform: "translate(-50%, -50%) rotate(-1deg)" }}
+      >
+        <div className="flex items-center justify-between mb-5">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-400">
+            Year 6 Media Studies
+          </div>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 ring-1 ring-violet-400/30 px-2.5 py-1 text-[11px] font-semibold text-violet-200">
+            <Sparkles className="h-3 w-3" />
+            AI Draft
+          </span>
+        </div>
+
+        <div className="text-lg font-semibold text-zinc-50 tracking-tight">
+          Episode 4 — Lunchtime News
+        </div>
+        <div className="mt-1 text-[13px] text-zinc-400">
+          AI draft ready for your review · 3 students contributed
+        </div>
+
+        <div className="mt-5 flex items-center gap-4">
+          <button
+            type="button"
+            className="h-11 w-11 rounded-full bg-white text-zinc-950 grid place-items-center hover:bg-zinc-200 transition-colors flex-shrink-0"
+            aria-label="Play preview"
+          >
+            <Play className="h-3.5 w-3.5 ml-0.5" />
+          </button>
+          <div className="flex-1">
+            {/* The ONE pulsing element — only on the progress bar */}
+            <div className="h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+              <div
+                className="h-full w-2/5 rounded-full brand-pulse"
+                style={{
+                  background:
+                    "linear-gradient(90deg, rgb(0 128 255), rgb(79 70 229), rgb(124 58 237))",
+                }}
+              />
+            </div>
+            <div className="mt-2 flex justify-between text-[11px] text-zinc-500 font-mono">
+              <span>00:42</span>
+              <span>01:48</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-5 grid grid-cols-3 gap-2 text-[11px] text-zinc-300">
+          <div className="rounded-lg bg-zinc-900/60 ring-1 ring-white/[0.05] px-3 py-2">
+            <div className="text-zinc-500 text-[10px]">Uploaded by</div>
+            <div className="font-semibold text-zinc-100 mt-0.5 truncate">
+              Ava, Mia, Noah
+            </div>
+          </div>
+          <div className="rounded-lg bg-zinc-900/60 ring-1 ring-white/[0.05] px-3 py-2">
+            <div className="text-zinc-500 text-[10px]">AI prepared</div>
+            <div className="font-semibold text-zinc-100 mt-0.5">02:14 ago</div>
+          </div>
+          <div className="rounded-lg bg-zinc-900/60 ring-1 ring-white/[0.05] px-3 py-2">
+            <div className="text-zinc-500 text-[10px]">Status</div>
+            <div className="font-semibold text-emerald-300 mt-0.5">Safe</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Hero() {
+  return (
+    <section className="relative overflow-hidden">
+      {/* Single static hero glow — no animation */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+        <div
+          className="absolute -top-60 left-1/2 -translate-x-1/2 h-[820px] w-[1300px] rounded-full blur-3xl"
+          style={{
+            background:
+              "radial-gradient(closest-side, rgb(79 70 229 / 0.18), transparent)",
+          }}
+        />
+      </div>
+
+      <div className="container pt-16 md:pt-24 pb-16 md:pb-24 relative z-10">
+        <div className="grid lg:grid-cols-[minmax(0,1fr)_440px] xl:grid-cols-[minmax(0,1fr)_480px] gap-10 lg:gap-16 items-center">
+          <div className="space-y-7 min-w-0 relative z-10">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-300">
+              <span
+                className="h-1.5 w-1.5 rounded-full brand-pulse"
+                style={{ background: "rgb(167 139 250)" }}
+              />
+              Built for school media programs
+            </span>
+
+            <h1 className="text-5xl md:text-7xl font-semibold tracking-tight text-zinc-50 leading-[0.98]">
+              Students record.
+              <br />
+              <span className="brand-gradient-text">
+                Offloadr builds the story.
+              </span>
+            </h1>
+
+            <p className="text-lg md:text-xl text-zinc-300 leading-relaxed max-w-2xl">
+              Students upload footage from iPads, laptops or phones. Offloadr
+              organises the media, prepares a first video draft and gives
+              teachers a final MP4 to review, download and share.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 pt-1">
+              <PrimaryCTA>Book a School Demo</PrimaryCTA>
+              <SecondaryCTA>Log in to Offloadr</SecondaryCTA>
+            </div>
+
+            {/* Proof stats row — answers principal / IT objections fast */}
+            <dl className="flex flex-wrap items-center gap-x-8 gap-y-3 pt-4 text-sm">
+              <div>
+                <dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
+                  Browser-based
+                </dt>
+                <dd className="mt-0.5 text-zinc-100 font-semibold">
+                  100% — no installs
+                </dd>
+              </div>
+              <div className="hidden sm:block h-8 w-px bg-white/[0.08]" />
+              <div>
+                <dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
+                  Data region
+                </dt>
+                <dd className="mt-0.5 text-zinc-100 font-semibold">
+                  Hosted in Australia
+                </dd>
+              </div>
+              <div className="hidden sm:block h-8 w-px bg-white/[0.08]" />
+              <div>
+                <dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
+                  Student accounts
+                </dt>
+                <dd className="mt-0.5 text-zinc-100 font-semibold">
+                  Zero to create
+                </dd>
+              </div>
+            </dl>
+
+            <div className="pt-1 text-xs text-zinc-500">
+              Now piloting with Australian secondary schools and education media
+              programs.
+            </div>
+          </div>
+
+          <div className="relative flex items-center justify-center lg:py-8">
+            <HeroVisual />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  How it works — 4 calm steps, brand-coloured progression                    */
+/* -------------------------------------------------------------------------- */
+
+const STEPS = [
+  {
+    n: "01",
+    icon: Upload,
+    tint: "brand-blue",
+    title: "Students upload from any device",
+    body: "Phone, school laptop, Chromebook or classroom camera. One scan, one tap. No accounts to create, no drives to hand around.",
+  },
+  {
+    n: "02",
+    icon: School,
+    tint: "brand-indigo",
+    title: "Offloadr organises every take",
+    body: "Files land in the right class, the right project, with the right student attached. Nothing gets lost, nothing gets misnamed.",
+  },
+  {
+    n: "03",
+    icon: Sparkles,
+    tint: "brand-violet",
+    title: "AI prepares a teacher-ready draft",
+    body: "Highlights detected, captions generated, a first-cut export ready before the next bell. For the teacher to review — not for the class to see.",
+  },
+  {
+    n: "04",
+    icon: ShieldCheck,
+    tint: "brand-emerald",
+    title: "Teacher approves. Safe to close.",
+    body: "Nothing leaves the classroom until the teacher signs off. Approved projects export to MP4, share with parents, or hand off to senior students.",
+  },
+] as const;
+
+function HowItWorks() {
+  return (
+    <section
+      id="how"
+      className="relative border-y border-white/[0.06] bg-zinc-950/40"
+    >
+      <div className="container py-16 md:py-24 relative z-10">
+        <SectionHeading
+          eyebrow="How it works"
+          title="From a phone in the back row to a teacher-approved project."
+          subtitle="Four quiet steps. No drives, no DIY pipelines, no late nights chasing files."
+        />
+
+        <div className="mt-8 relative">
+          {/* Gradient connector line behind the cards (desktop only) */}
+          <div
+            aria-hidden
+            className="hidden lg:block absolute top-[68px] left-[12.5%] right-[12.5%] h-0.5 pointer-events-none rounded-full"
+            style={{
+              background:
+                "linear-gradient(90deg, rgb(0 128 255 / 0.6), rgb(79 70 229 / 0.6), rgb(124 58 237 / 0.6), rgb(16 185 129 / 0.6))",
+              opacity: 0.5,
+            }}
+          />
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 relative">
+            {STEPS.map((s) => (
+              <div
+                key={s.n}
+                className="brand-card relative z-10 rounded-2xl border border-white/[0.06] bg-zinc-950/80 p-7"
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <div className={`brand-icon ${s.tint}`}>
+                    <s.icon className="h-5 w-5" strokeWidth={2} />
+                  </div>
+                  <span className="text-[11px] font-mono text-zinc-500">
+                    {s.n}
+                  </span>
+                </div>
+                <div className="text-base font-semibold text-zinc-50 mb-2 tracking-tight">
+                  {s.title}
+                </div>
+                <p className="text-sm text-zinc-300 leading-relaxed">
+                  {s.body}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Classroom Workflow — three lanes with brand-coloured checks                */
+/* -------------------------------------------------------------------------- */
+
+function WorkflowSection() {
+  const lanes = [
+    {
+      label: "Students",
+      icon: Users,
+      tint: "brand-blue",
+      checkColor: "text-[rgb(0_128_255)]",
+      items: [
+        "Ava recorded interview",
+        "Mia recorded B-roll",
+        "Noah uploading…",
+      ],
+    },
+    {
+      label: "Offloadr",
+      icon: School,
+      tint: "brand-indigo",
+      checkColor: "text-[rgb(129_140_248)]",
+      items: [
+        "Sorted into Year 6 · Episode 4",
+        "All 8 takes verified",
+        "Ready for AI",
+      ],
+    },
+    {
+      label: "Teacher",
+      icon: GraduationCap,
+      tint: "brand-emerald",
+      checkColor: "text-emerald-400",
+      items: [
+        "Draft ready to review",
+        "Approve · Edit notes · Re-run AI",
+        "Share with parents",
+      ],
+    },
+  ] as const;
+
+  return (
+    <section
+      id="workflow"
+      className="relative border-b border-white/[0.06] bg-zinc-950/40"
+    >
+      <div className="container py-16 md:py-24 relative z-10">
+        <SectionHeading
+          eyebrow="Classroom workflow"
+          title="One simple flow. Three quiet hand-offs."
+          subtitle="Students record. Offloadr organises and prepares. Teachers review and approve. That's the whole loop."
+        />
+
+        <div className="mt-10 grid md:grid-cols-3 gap-4">
+          {lanes.map((lane, idx) => (
+            <div
+              key={lane.label}
+              className="brand-card relative rounded-2xl border border-white/[0.06] bg-zinc-950/80 p-7"
+            >
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-3">
+                  <div className={`brand-icon brand-icon-sm ${lane.tint}`}>
+                    <lane.icon className="h-4 w-4" strokeWidth={2} />
+                  </div>
+                  <div className="text-sm font-semibold text-zinc-50 tracking-tight">
+                    {lane.label}
+                  </div>
+                </div>
+                <span className="text-[11px] font-mono text-zinc-500">
+                  0{idx + 1}
+                </span>
+              </div>
+              <ul className="space-y-2.5 text-sm text-zinc-200">
+                {lane.items.map((item) => (
+                  <li key={item} className="flex items-start gap-2.5">
+                    <CheckCircle2
+                      className={`h-4 w-4 mt-0.5 ${lane.checkColor} flex-shrink-0`}
+                    />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {/* Value-prop strip — folds in the old For Schools section in one line. */}
+        <ul className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-[13px] text-zinc-400">
+          <li className="inline-flex items-center gap-2">
+            <ShieldCheck className="h-3.5 w-3.5" style={{ color: "rgb(0 128 255)" }} />
+            <span><span className="text-zinc-100 font-semibold">Safe-for-schools</span> by default</span>
+          </li>
+          <li className="hidden sm:block h-3 w-px bg-white/[0.10]" />
+          <li className="inline-flex items-center gap-2">
+            <Sparkles className="h-3.5 w-3.5" style={{ color: "rgb(167 139 250)" }} />
+            <span><span className="text-zinc-100 font-semibold">AI that assists</span>, never replaces</span>
+          </li>
+          <li className="hidden sm:block h-3 w-px bg-white/[0.10]" />
+          <li className="inline-flex items-center gap-2">
+            <Smartphone className="h-3.5 w-3.5" style={{ color: "rgb(196 181 253)" }} />
+            <span>Works on devices students <span className="text-zinc-100 font-semibold">already have</span></span>
+          </li>
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  AI Editing — split layout: text left, timeline visual card right           */
+/* -------------------------------------------------------------------------- */
+
+// Deterministic waveform bar heights (4–16px). Hard-coded — no Math.random()
+// in render: that re-rolls every paint and jitters on hot reload.
+const WAVEFORM = [
+  5, 8, 11, 14, 9, 6, 4, 7, 10, 13, 15, 12, 8, 5, 7, 11, 14, 16, 12, 9, 6, 4,
+  6, 10, 13, 15, 11, 8, 5, 7, 9, 12, 14, 13, 10, 7, 5, 8, 11, 13, 15, 12, 9, 6,
+  4, 7, 10, 12, 14, 11, 8, 5, 6, 9, 12, 14, 13, 10, 7, 5, 7, 9, 11, 8,
+];
+
+// Timeline clip widths (in flex-grow units) + tint. Five clips of varying
+// duration, brand-tinted.
+const CLIPS = [
+  { grow: 3, color: "rgb(0 128 255 / 0.55)", border: "rgb(0 128 255 / 0.85)" },
+  { grow: 5, color: "rgb(79 70 229 / 0.55)", border: "rgb(79 70 229 / 0.85)" },
+  { grow: 2, color: "rgb(124 58 237 / 0.55)", border: "rgb(124 58 237 / 0.85)" },
+  { grow: 4, color: "rgb(167 139 250 / 0.55)", border: "rgb(167 139 250 / 0.85)" },
+  { grow: 3, color: "rgb(0 128 255 / 0.55)", border: "rgb(0 128 255 / 0.85)" },
+] as const;
+
+function AIEditingSection() {
+  return (
+    <section id="ai" className="relative border-b border-white/[0.06]">
+      <div className="container py-16 md:py-24 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+          {/* LEFT: copy + tight bullet list */}
+          <div className="space-y-6 lg:sticky lg:top-28">
+            <SectionHeading
+              eyebrow="AI editing"
+              title="AI does the first cut. Teachers do the calls that matter."
+              subtitle="Offloadr's AI prepares a draft fast enough that the teacher spends their time on judgement, not on importing files."
+            />
+            <ul className="space-y-2.5 pt-2">
+              {[
+                "Captions generated from student audio, ready to caption-burn",
+                "Highlight detection picks the moments teachers usually mark",
+                "First-cut MP4 export available in the teacher dashboard the same lesson",
+              ].map((t) => (
+                <li
+                  key={t}
+                  className="flex items-start gap-3 text-sm text-zinc-200 leading-relaxed"
+                >
+                  <Sparkles
+                    className="h-4 w-4 mt-0.5 flex-shrink-0"
+                    strokeWidth={2}
+                    style={{ color: "rgb(167 139 250)" }}
+                  />
+                  <span>{t}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* RIGHT: timeline visual card — clips + waveform + status */}
+          <div className="brand-card rounded-2xl border border-white/[0.06] bg-zinc-950/80 p-5 md:p-6">
+            {/* Header: project + AI Draft badge */}
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.16em]">
+                  Smart Draft
+                </div>
+                <div className="mt-1 text-sm font-semibold text-zinc-50 tracking-tight">
+                  Year 10 News Segment
+                </div>
+              </div>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-500/10 ring-1 ring-violet-400/30 px-2.5 py-1 text-[11px] font-semibold text-violet-200">
+                <Sparkles className="h-3 w-3" />
+                AI Draft
+              </span>
+            </div>
+
+            {/* Timeline ruler */}
+            <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500 px-1 mb-1.5">
+              <span>00:00</span>
+              <span>00:45</span>
+              <span>01:30</span>
+              <span>02:15</span>
+              <span>03:00</span>
+            </div>
+
+            {/* Clip strip */}
+            <div className="flex items-stretch gap-1 h-14 rounded-lg bg-zinc-900/60 ring-1 ring-white/[0.04] p-1">
+              {CLIPS.map((c, i) => (
+                <div
+                  key={i}
+                  className="rounded-md"
+                  style={{
+                    flexGrow: c.grow,
+                    flexBasis: 0,
+                    background: c.color,
+                    boxShadow: `inset 0 0 0 1px ${c.border}`,
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Waveform row */}
+            <div className="mt-3 flex items-center gap-[2px] h-5 px-1">
+              {WAVEFORM.map((h, i) => (
+                <div
+                  key={i}
+                  className="flex-1 rounded-[1px]"
+                  style={{
+                    height: `${h}px`,
+                    background: "rgb(79 70 229 / 0.4)",
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Status row */}
+            <div className="mt-5 flex items-center justify-between rounded-lg bg-zinc-900/60 ring-1 ring-white/[0.04] px-3.5 py-2.5">
+              <div className="flex items-center gap-2.5 text-[12px] text-zinc-200">
+                <svg
+                  className="h-3.5 w-3.5 animate-spin motion-reduce:animate-none"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden
+                >
+                  <circle cx="12" cy="12" r="9" stroke="rgb(167 139 250 / 0.25)" strokeWidth="2" />
+                  <path d="M21 12a9 9 0 0 0-9-9" stroke="rgb(167 139 250)" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+                <span className="font-semibold">Building draft…</span>
+                <span className="text-zinc-500 hidden sm:inline">
+                  captions · highlights · cut
+                </span>
+              </div>
+              <div className="text-[11px] font-mono text-zinc-400">
+                02:34 / 1080p
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Security — school-grade trust signals, all blue                            */
+/* -------------------------------------------------------------------------- */
+
+const SECURITY_POINTS = [
+  {
+    icon: Lock,
+    title: "Teacher-controlled access",
+    body: "Every upload is tied to a student in a class. Nothing is shared, public, or sent home until the teacher explicitly approves it.",
+  },
+  {
+    icon: KeyRound,
+    title: "Student privacy by design",
+    body: "Students don't sign up. They upload via a per-class scan-and-tap code. No public accounts, no public profiles, nothing for the open internet to crawl.",
+  },
+  {
+    icon: Server,
+    title: "Australian-hosted infrastructure",
+    body: "Storage and processing run in Australian data regions, on infrastructure aligned to how school IT teams actually operate.",
+  },
+  {
+    icon: Eye,
+    title: "A clear audit trail",
+    body: "Every upload, every AI run, every approval is logged against a teacher and a class. If it's ever asked about, there's an answer.",
+  },
+] as const;
+
+function SecuritySection() {
+  return (
+    <section
+      id="security"
+      className="relative border-b border-white/[0.06] bg-zinc-950/40"
+    >
+      <div className="container py-16 md:py-24 relative z-10">
+        <div className="grid lg:grid-cols-12 gap-12 items-start">
+          <div className="lg:col-span-5 space-y-5 lg:sticky lg:top-28">
+            <Eyebrow>Security · Built for Australian schools</Eyebrow>
+            <h2 className="text-3xl md:text-5xl font-semibold tracking-tight text-zinc-50 leading-[1.05]">
+              Built to pass the questions school IT actually asks.
+            </h2>
+            <p className="text-base text-zinc-300 leading-relaxed">
+              Schools can't take risks with student data, and they shouldn't
+              have to. Offloadr is designed around the way Australian schools
+              have to operate — teacher-controlled, privacy-first, hosted
+              locally, fully auditable.
+            </p>
+            <div className="pt-2 flex flex-wrap gap-2">
+              {[
+                "No public student links",
+                "AU data regions",
+                "Teacher approvals on every share",
+                "Audit log on every action",
+              ].map((t) => (
+                <span
+                  key={t}
+                  className="brand-chip-blue inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-semibold"
+                >
+                  <ShieldCheck className="h-3 w-3" />
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="lg:col-span-7 grid sm:grid-cols-2 gap-4">
+            {SECURITY_POINTS.map((p) => (
+              <div
+                key={p.title}
+                className="brand-card rounded-2xl border border-white/[0.06] bg-zinc-950/80 p-6"
+              >
+                <div className="brand-icon brand-blue mb-4">
+                  <p.icon className="h-5 w-5" strokeWidth={2} />
+                </div>
+                <div className="text-base font-semibold text-zinc-50 tracking-tight mb-1.5">
+                  {p.title}
+                </div>
+                <p className="text-sm text-zinc-300 leading-relaxed">
+                  {p.body}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Pilot CTA — wrapped in a bordered card, static glow, gradient on Offloadr  */
+/* -------------------------------------------------------------------------- */
+
+function PilotCTA() {
+  return (
+    <section
+      id="pilot"
+      className="relative bg-gradient-to-b from-zinc-950 to-zinc-950/30"
+    >
+      <div className="container py-16 md:py-24 relative z-10">
+        <div
+          className="brand-card relative mx-auto max-w-3xl rounded-3xl border bg-zinc-950/80 px-8 py-14 md:px-12 md:py-16 text-center overflow-hidden"
+          style={{ borderColor: "rgb(79 70 229 / 0.22)" }}
+        >
+          {/* Static internal glow */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(ellipse at center top, rgb(79 70 229 / 0.10) 0%, transparent 60%)",
+            }}
+          />
+
+          <div className="relative z-10 space-y-7 max-w-3xl mx-auto">
+            <div className="flex justify-center">
+              <Eyebrow>School pilot · Term 2 / Term 3</Eyebrow>
+            </div>
+            <h2 className="text-4xl md:text-6xl font-semibold tracking-tight text-zinc-50 leading-[1.02]">
+              Bring <span className="brand-gradient-text">Offloadr</span> to
+              your classroom this term.
+            </h2>
+            <p className="text-base md:text-lg text-zinc-300 leading-relaxed max-w-2xl mx-auto">
+              We're onboarding a small cohort of Australian schools running
+              media programs. A short demo, a guided setup, and your students
+              can be uploading by the next lesson.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+              <PrimaryCTA>Book a School Demo</PrimaryCTA>
+              <SecondaryCTA>Log in to Offloadr</SecondaryCTA>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Page                                                                       */
+/* -------------------------------------------------------------------------- */
+
+export default function Home() {
+  return (
+    <PublicLayout>
+      <Hero />
+      <HowItWorks />
+      <WorkflowSection />
+      <AIEditingSection />
+      <SecuritySection />
+      <PilotCTA />
+    </PublicLayout>
+  );
+}

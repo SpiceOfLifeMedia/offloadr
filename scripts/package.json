@@ -5,18 +5,10 @@
   "type": "module",
   "scripts": {
     "hello": "tsx ./src/hello.ts",
-    "check-deploy-freshness": "tsx ./src/check-deploy-freshness.ts",
-    "db-health-check": "tsx ./src/db-health-check.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "@types/pg": "^8.18.0",
     "tsx": "catalog:"
-  },
-  "dependencies": {
-    "@types/pdfkit": "^0.17.6",
-    "pdfkit": "^0.18.0",
-    "pg": "^8.20.0"
   }
 }

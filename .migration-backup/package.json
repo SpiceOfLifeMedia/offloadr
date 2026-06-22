@@ -1,0 +1,18 @@
+{
+  "name": "offloadr-platform",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter @workspace/offloadr-api run dev\" \"pnpm --filter @workspace/offloadr-app run dev\"",
+    "build": "pnpm --filter @workspace/offloadr-api run build && pnpm --filter @workspace/offloadr-app run build",
+    "typecheck": "pnpm -r --if-present run typecheck"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "typescript": "~5.9.3"
+  },
+  "packageManager": "pnpm@10.26.1",
+  "engines": {
+    "node": ">=20"
+  }
+}
