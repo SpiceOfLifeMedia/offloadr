@@ -52,19 +52,22 @@ platform's environment settings.
 | --- | :---: | --- |
 | `DATABASE_URL` | yes | Postgres connection string. |
 | `SESSION_SECRET` | yes | Long random string (>=32 chars) for signing session cookies. |
+| `PORT` | no | API server listen port. **Required** — the server fails to start if unset (the host usually injects it). |
+| `BASE_PATH` | no | Build-time base path for the web app. **Required** — the Vite build fails if unset (use `/`). |
 
 ### Routing & static serving (optional)
 
 | Variable | Default | Description |
 | --- | --- | --- |
-| `PORT` | `8080` | API server listen port (often injected by host). |
 | `NODE_ENV` | — | `development` or `production`. |
 | `OFFLOADR_ENV` | `pilot` | App stage: `production` / `pilot` / `dev`. |
 | `API_MOUNT_PATH` | `/api` | URL prefix for API routes. |
 | `WEB_BASE_PATH` | `/` | Base path the web bundle is served from. |
-| `BASE_PATH` | `/` | Build-time base path for the Vite app. |
-| `STATIC_WEB_DIR` | — | Absolute path to the built web app `dist/`. When set, the API serves the SPA. |
+| `STATIC_WEB_DIR` | — | Absolute path to the built web app output (`artifacts/offloadr-app/dist/public`). When set, the API serves the SPA. |
 | `APP_BASE_URL` | — | Public URL of the app (used in emails/links). |
+
+> `PORT` and `BASE_PATH` are listed under "Required" above — they are not optional
+> despite looking like routing config.
 
 ### Storage
 
@@ -78,6 +81,7 @@ platform's environment settings.
 | `STORAGE_S3_ENDPOINT` | — | | Required for R2/MinIO. |
 | `STORAGE_S3_ACCESS_KEY_ID` | — | yes | Required when `STORAGE_DRIVER=s3`. |
 | `STORAGE_S3_SECRET_ACCESS_KEY` | — | yes | Required when `STORAGE_DRIVER=s3`. |
+| `STORAGE_S3_FORCE_PATH_STYLE` | `false` | | Path-style addressing for S3-compatible stores (e.g. MinIO). |
 
 ### Google Drive transfers via rclone (optional)
 
@@ -88,6 +92,7 @@ platform's environment settings.
 | `GDRIVE_UPLOAD_ROOT` | | Drive folder root for uploads. |
 | `GDRIVE_SHARED_DRIVE_ID` | | Shared Drive ID (if applicable). |
 | `GOOGLE_SERVICE_ACCOUNT_KEY` | yes | Single-line JSON service-account key (if using the Drive API directly). |
+| `RCLONE_CONFIG` | | Path to an rclone config file (alternative to inline service-account creds). |
 | `TRANSFER_CONCURRENCY` | | Max concurrent transfers (default `2`). |
 
 > rclone credentials themselves live in rclone's own config file
@@ -98,6 +103,10 @@ platform's environment settings.
 | Variable | Secret? | Description |
 | --- | :---: | --- |
 | `RESEND_API_KEY` | yes | Resend API key for transactional email. |
+| `UPLOAD_NOTIFICATION_EMAIL` | | Recipient for upload notifications (code has a built-in default). |
+| `UPLOAD_NOTIFICATION_FROM` | | Sender for upload notifications (code has a built-in default). |
+| `RENDER_NOTIFICATION_EMAIL` | | Recipient for render-complete notifications (code has a built-in default). |
+| `RENDER_NOTIFICATION_FROM` | | Sender for render-complete notifications (code has a built-in default). |
 | `IP_HASH_SALT` | yes | Salt for hashing client IPs. |
 | `STUDENT_ACCOUNTS_ENABLED` | | `true`/`false` toggle for the student portal. |
 | `LOG_LEVEL` | | Pino log level (`info`, `debug`, ...). |
@@ -142,7 +151,7 @@ pnpm run build
 
 Outputs:
 
-- Web app: `artifacts/offloadr-app/dist/`
+- Web app: `artifacts/offloadr-app/dist/public/`
 - API server: `artifacts/api-server/dist/index.mjs`
 
 ### Serve in production
@@ -153,7 +162,7 @@ Run the API server and point it at the built web bundle:
 export NODE_ENV=production
 export DATABASE_URL=...        # your Postgres URL
 export SESSION_SECRET=...      # long random string
-export STATIC_WEB_DIR="$(pwd)/artifacts/offloadr-app/dist"
+export STATIC_WEB_DIR="$(pwd)/artifacts/offloadr-app/dist/public"
 node artifacts/api-server/dist/index.mjs
 ```
 
@@ -176,8 +185,8 @@ Suggested settings for a generic Node host:
 - **Install:** `pnpm install`
 - **Build:** `pnpm run build`
 - **Start:** `node artifacts/api-server/dist/index.mjs`
-- **Output (web):** `artifacts/offloadr-app/dist`
-- Set `STATIC_WEB_DIR` to the web `dist/` path so one process serves both.
+- **Output (web):** `artifacts/offloadr-app/dist/public`
+- Set `STATIC_WEB_DIR` to the web `dist/public` path so one process serves both.
 - Provide all required env vars and a reachable `DATABASE_URL`.
 
 On **Replit** this is configured as an `autoscale` deployment (see `.replit`).

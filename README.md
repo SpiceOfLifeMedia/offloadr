@@ -53,8 +53,9 @@ Full rebuild-from-scratch instructions are in **[docs/SETUP.md](docs/SETUP.md)**
 
 ## Environment variables
 
-Every variable is documented in [`.env.example`](.env.example). The only two
-**required** variables are `DATABASE_URL` and `SESSION_SECRET`. See
+Every variable is documented in [`.env.example`](.env.example). The required
+variables are `DATABASE_URL`, `SESSION_SECRET`, `PORT`, and `BASE_PATH` (the
+server and web build fail to start without the latter two). See
 [docs/SETUP.md](docs/SETUP.md) for the full table and which are secrets.
 
 ## Build
@@ -64,11 +65,11 @@ pnpm run typecheck   # typecheck all packages
 pnpm run build       # typecheck + build all packages
 ```
 
-- Web app build output: `artifacts/offloadr-app/dist/`
+- Web app build output: `artifacts/offloadr-app/dist/public/`
 - API server build output: `artifacts/api-server/dist/index.mjs`
 
 In production the API server can serve the built web app by setting
-`STATIC_WEB_DIR` to the web app's `dist/` directory.
+`STATIC_WEB_DIR` to the web app's `dist/public/` directory.
 
 ## Deployment
 
